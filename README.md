@@ -34,7 +34,17 @@ The alert sound can be customized by placing `wav` or `ogg` audio files into `Us
 
 ## Development
 
-Replace `BeatSaberDir` to your beat saber path in [CrouchAlert.csproj.user](./CrouchAlert.csproj.user) before building.
+Before building, create the file `CrouchAlert.csproj.user` in the project directory and add your beat saber path into it:
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+		<!-- Change this path if necessary. -->
+		<BeatSaberDir>Path/To/Your/BeatSaber</BeatSaberDir>
+  </PropertyGroup>
+</Project>
+```
 
 ## Credit
 
