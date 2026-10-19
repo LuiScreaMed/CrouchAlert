@@ -36,13 +36,13 @@
 
 在构建前，在项目文件夹创建 `CrouchAlert.csproj.user`，并添加你的节奏光剑路径：
 
-```
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <PropertyGroup>
-		<!-- Change this path if necessary. -->
-		<BeatSaberDir>Path/To/Your/BeatSaber</BeatSaberDir>
-  </PropertyGroup>
+    <PropertyGroup>
+        <!-- Change this path if necessary. -->
+        <BeatSaberDir>Path/To/Your/BeatSaber</BeatSaberDir>
+    </PropertyGroup>
 </Project>
 ```
 
