@@ -1,0 +1,41 @@
+# 下蹲预警
+
+[English](./README.md) | 简体中文
+
+一个用于警告即将到来的需要下蹲的墙的节奏光剑 Mod。支持 PC 版本节奏光剑 1.40.8。
+
+## 安装
+
+### 依赖
+
+该 Mod 依赖以下 Mod：
+
+- [BSIPA](https://github.com/nike4613/BeatSaber-IPA-Reloaded)
+- [BSML](https://github.com/monkeymanboy/BeatSaberMarkupLanguage)
+- [SiraUtil](https://github.com/Auros/SiraUtil)
+
+### 手动安装
+
+从 [发布页](https://github.com/LuiScreaMed/CrouchAlert/releases) 下载压缩包，拖入 BSManager 或解压到节奏光剑游戏根目录进行安装。
+
+## 功能
+
+- 严格模式
+
+    启用后，仅在一整排墙的情况下判断下蹲
+
+- 预警音效
+
+    在预警时播放音效
+
+其他基本选项可在游戏内设置菜单找到（主菜单左侧）。
+
+预警音效可以通过将 `wav` 或 `ogg` 音频文件放入 `UserData/CrouchAlert` 进行自定义
+
+## 开发
+
+在编译前将 [CrouchAlert.csproj.user](./CrouchAlert.csproj.user) 内的 `BeatSaberDir` 替换成你的节奏光剑路径。
+
+## 鸣谢
+
+`default.wav` 音效通过网站 [jsfxr](https://sfxr.me/) 生成。

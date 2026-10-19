@@ -1,0 +1,7 @@
+<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='https://monkeymanboy.github.io/BSML-Docs/BSMLSchema.xsd'>
+    <vertical child-align="MiddleCenter" vertical-fit="PreferredSize">
+        <text id="crouchText" text-key="CROUCH_ALERT_CROUCH_TEXT" font-size="18" bold="true"/>
+        <text id="countDownText" text="~CountDownText" font-size="14" bold="false" align="Center"/>
+    </vertical>
+</bg>
