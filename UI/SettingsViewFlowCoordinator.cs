@@ -1,6 +1,7 @@
 using System;
 using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.MenuButtons;
+using CrouchAlert.Utils;
 using HMUI;
 using Zenject;
 
@@ -15,7 +16,7 @@ internal class SettingsViewFlowCoordinator : FlowCoordinator, IDisposable
     public void Construct(SettingsView settingsView)
     {
         _settingsView = settingsView;
-        _menuButton = new MenuButton(BGLib.Polyglot.Localization.Get("CROUCH_ALERT_TITLE"),
+        _menuButton = new MenuButton(LocalizedTexts.Title,
             () => { BeatSaberUI.MainFlowCoordinator.PresentFlowCoordinator(this); });
         MenuButtons.Instance.RegisterButton(_menuButton);
     }
@@ -34,7 +35,7 @@ internal class SettingsViewFlowCoordinator : FlowCoordinator, IDisposable
     {
         if (firstActivation)
         {
-            SetTitle(BGLib.Polyglot.Localization.Get("CROUCH_ALERT_TITLE"));
+            SetTitle(LocalizedTexts.Title);
             showBackButton = true;
             ProvideInitialViewControllers(_settingsView);
         }

@@ -1,6 +1,6 @@
-namespace CrouchAlert;
+namespace CrouchAlert.Utils;
 
-internal static class Utils
+internal static class Formatter
 {
     public static string FormatFloatSecond(float input)
     {

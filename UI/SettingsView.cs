@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components.Settings;
 using BeatSaberMarkupLanguage.ViewControllers;
+using CrouchAlert.Utils;
 using TMPro;
 using Zenject;
 
@@ -28,14 +29,12 @@ internal class SettingsView : BSMLAutomaticViewController
     [UIComponent("remindSoundAudioClipNotFoundText")]
     private readonly TextMeshProUGUI? _audioNotFoundText = null;
 
-    private string _noneText => BGLib.Polyglot.Localization.Get("CROUCH_ALERT_AUDIO_CLIP_NONE");
-
     [Inject]
     public void Construct(PluginConfig config, AudioClipLoader audioClipLoader)
     {
         _config = config;
         _audioClipLoader = audioClipLoader;
-        _audioClipOptions.Add(_noneText);
+        _audioClipOptions.Add(LocalizedTexts.AudioClipNone);
         // Init audio clip drop down
         foreach (string audioClipName in _audioClipLoader.AudioClipNames)
         {
@@ -110,7 +109,7 @@ internal class SettingsView : BSMLAutomaticViewController
 
     private string RemindSoundAudioClipValue
     {
-        get => _config.AlertSoundAudioClip == string.Empty ? _noneText : _config.AlertSoundAudioClip;
+        get => _config.AlertSoundAudioClip == string.Empty ? LocalizedTexts.AudioClipNone : _config.AlertSoundAudioClip;
         set
         {
             if (RemindSoundAudioClipNotFound)
@@ -119,7 +118,7 @@ internal class SettingsView : BSMLAutomaticViewController
                 _audioClipOptions.RemoveAt(removeIndex);
             }
 
-            _config.AlertSoundAudioClip = value == _noneText ? string.Empty : value;
+            _config.AlertSoundAudioClip = value == LocalizedTexts.AudioClipNone ? string.Empty : value;
 
             _config.Changed();
             NotifyPropertyChanged();
@@ -144,7 +143,7 @@ internal class SettingsView : BSMLAutomaticViewController
     [UIAction("FormatDuration")]
     private string FormatDuration(float value)
     {
-        return Utils.FormatFloatSecond(value);
+        return Formatter.FormatFloatSecond(value);
     }
 
     private void UpdateUI()
