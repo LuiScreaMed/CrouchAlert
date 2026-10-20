@@ -148,9 +148,9 @@ internal class SettingsView : BSMLAutomaticViewController
 
     private void UpdateUI()
     {
-        _audioNotFoundText?.rectTransform.gameObject.SetActive(RemindSoundAudioClipNotFound);
+        _audioNotFoundText?.rectTransform.gameObject.SetActive(EnableRemindSoundValue && RemindSoundAudioClipNotFound);
         _audioClipDropdown?.UpdateChoices();
-        _audioClipDropdown?.Interactable = EnableRemindSoundValue;
-        _volumeSlider?.Interactable = EnableRemindSoundValue;
+        _audioClipDropdown?.transform.parent.gameObject.SetActive(EnableRemindSoundValue);
+        _volumeSlider?.gameObject.SetActive(EnableRemindSoundValue);
     }
 }
