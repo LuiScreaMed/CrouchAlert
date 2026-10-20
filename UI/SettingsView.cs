@@ -42,7 +42,7 @@ internal class SettingsView : BSMLAutomaticViewController
             _loadedAudioClips.Add(audioClipName);
         }
 
-        if (_config.AlertSoundAudioClip != string.Empty && _config.AlertSoundAudioClip != _noneText)
+        if (_config.AlertSoundAudioClip != string.Empty && _config.AlertSoundAudioClip != LocalizedTexts.AudioClipNone)
         {
             if (!_audioClipOptions.Contains(_config.AlertSoundAudioClip))
                 _audioClipOptions.Add(_config.AlertSoundAudioClip);
