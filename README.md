@@ -2,7 +2,7 @@
 
 English | [简体中文](./README_zh.md)
 
-A Beat Saber mod to alert incoming crouching walls. Supports Beat Saber 1.40.8 on PC.
+A Beat Saber mod to alert incoming crouching walls. Supports Beat Saber 1.40.8 on PC. May not work correctly in Noodle/Mapping Extensions maps.
 
 ## Installation
 
@@ -20,13 +20,17 @@ Download the zip file from [Release Page](https://github.com/LuiScreaMed/CrouchA
 
 ## Features
 
-- Strict Mode
+- **Alert Duration (In beats/In seconds)**
+
+    Alert crouches ahead configured beats / seconds.
+
+- **Strict Mode**
 
     When enabled, only consider crouches with full lines of walls.
 
-- Alert Sound
+- **Alert Sound**
 
-    Play a sound when alert.
+    Play a configured sound when alert.
 
 Other basic options can be found in in-game settings page (from the left side of the main menu).
 
