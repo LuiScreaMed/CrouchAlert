@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using BeatSaberMarkupLanguage.FloatingScreen;
+using CrouchAlert.Data;
+using CrouchAlert.Data.Wall;
 using CrouchAlert.UI;
 using CrouchAlert.Utils;
-using CrouchAlert.WallData;
 using CustomJSONData.CustomBeatmap;
 using HMUI;
 using UnityEngine;
@@ -31,11 +31,8 @@ internal class CrouchAlertController : MonoBehaviour
 
     private AudioClip? _alertSoundAudioClip = null;
 
-    // (float time, float bpm)[]
-    private (float, float)[]? _bpmChanges = null;
-
-    // (float alertTime, float duration)[]
-    private (float, float)[]? _crouches = null;
+    private BPMChangeItem[]? _bpmChanges = null;
+    private CrouchItem[]? _crouches = null;
     private int _nextCrouchIndex = -1;
 
     private FloatingScreen _floatingScreen = null!;
@@ -74,10 +71,10 @@ internal class CrouchAlertController : MonoBehaviour
     private void BuildBPMChanges()
     {
         _bpmChanges = _readonlyBeatmapData.allBeatmapDataItems.OfType<BPMChangeBeatmapEventData>()
-            .Select(data => (data.time, data.bpm)).ToArray();
-        if (_bpmChanges.Length == 0 || _bpmChanges[0].Item1 != 0)
+            .Select(data => new BPMChangeItem(data.time, data.bpm)).ToArray();
+        if (_bpmChanges.Length == 0 || _bpmChanges[0].Time != 0)
         {
-            _bpmChanges = _bpmChanges.Prepend((0, _beatmapLevel.beatsPerMinute)).ToArray();
+            _bpmChanges = _bpmChanges.Prepend(new BPMChangeItem(0, _beatmapLevel.beatsPerMinute)).ToArray();
         }
     }
 
@@ -85,12 +82,10 @@ internal class CrouchAlertController : MonoBehaviour
     {
         Plugin.Log.Info("Reading map data, calculating crouches");
         float startTime = Time.time;
-        // (float alertTime, float duration)
-        HashSet<(float, float)> crouches = new();
+        HashSet<CrouchItem> crouches = new();
         Walls currentWalls = new Walls();
         // Use bpm to get duration of a beat, the calculate the minimum wall duration in beats
-        // (float time, float bpm)[]
-        float bpm = _bpmChanges![0].Item2;
+        float bpm = _bpmChanges![0].BPM;
         int nextBPMChangeIndex = 0;
         // Minimum wall duration, add .005s margin
         float minimumDuration = CalculateDurationInBeats(bpm, _config.MinimumWallDurationInBeats) + 0.01f;
@@ -103,9 +98,9 @@ internal class CrouchAlertController : MonoBehaviour
         {
             if (item is not ObstacleData obstacle) continue;
             obstacleCount++;
-            if (nextBPMChangeIndex != -1 && obstacle.time >= _bpmChanges[nextBPMChangeIndex].Item1)
+            if (nextBPMChangeIndex != -1 && obstacle.time >= _bpmChanges[nextBPMChangeIndex].Time)
             {
-                bpm = _bpmChanges[nextBPMChangeIndex++].Item2;
+                bpm = _bpmChanges[nextBPMChangeIndex++].BPM;
                 minimumDuration = CalculateDurationInBeats(bpm, _config.MinimumWallDurationInBeats) + 0.01f;
                 if (nextBPMChangeIndex >= _bpmChanges.Length) nextBPMChangeIndex = -1;
             }
@@ -136,18 +131,18 @@ internal class CrouchAlertController : MonoBehaviour
 
             if (NeedCrouch(currentWallTypes) && groupedCrouchWallFirstObstacle != null)
             {
-                float crouchAlertTime = _config.UseBeatsAsAlertDurationUnit
+                float alertTime = _config.UseBeatsAsAlertDurationUnit
                     ? CalculateAlertTimeInBeats(groupedCrouchWallFirstObstacle.time)
                     : groupedCrouchWallFirstObstacle.time - _config.AlertDurationInSeconds;
-                crouchAlertTime = Math.Max(.05f, crouchAlertTime);
-                crouches.Add((crouchAlertTime, groupedCrouchWallFirstObstacle.time - crouchAlertTime));
+                alertTime = Math.Max(.05f, alertTime);
+                crouches.Add(new CrouchItem(alertTime, groupedCrouchWallFirstObstacle.time - alertTime));
             }
         }
 
         Plugin.Log.Info(
             $"Calculating done (in {Time.time - startTime} s). {obstacleCount} obstacle(s) in total. {(crouches.Count)} crouches needed");
         if (crouches.Count <= 0) return;
-        crouches.Add((_audioTimeSyncController.songLength + 100f, 0f));
+        crouches.Add(new CrouchItem(_audioTimeSyncController.songLength + 100f, 0f));
         if (_config.AlertFirstOnly)
         {
             Plugin.Log.Info(
@@ -215,13 +210,13 @@ internal class CrouchAlertController : MonoBehaviour
         if (!_ready || _nextCrouchIndex < 0) return;
         int oldNextCrouchIndex = _nextCrouchIndex;
         while (_nextCrouchIndex > 0 &&
-               _audioTimeSyncController.songTime < _crouches![_nextCrouchIndex - 1].Item1)
+               _audioTimeSyncController.songTime < _crouches![_nextCrouchIndex - 1].AlertTime)
         {
             _nextCrouchIndex--;
         }
 
         while (_nextCrouchIndex < _crouches!.Length - 1 &&
-               _audioTimeSyncController.songTime >= _crouches![_nextCrouchIndex].Item1)
+               _audioTimeSyncController.songTime >= _crouches![_nextCrouchIndex].AlertTime)
         {
             _nextCrouchIndex++;
         }
@@ -229,7 +224,7 @@ internal class CrouchAlertController : MonoBehaviour
         if (_nextCrouchIndex > oldNextCrouchIndex &&
             _audioTimeSyncController.state == AudioTimeSyncController.State.Playing)
         {
-            StartCoroutine(Alert(_crouches![oldNextCrouchIndex].Item2 / _audioTimeSyncController.timeScale));
+            StartCoroutine(Alert(_crouches![oldNextCrouchIndex].Duration / _audioTimeSyncController.timeScale));
         }
     }
 
@@ -277,25 +272,25 @@ internal class CrouchAlertController : MonoBehaviour
     {
         int timeBPMIndex = 0;
         float bpm = 0f;
-        foreach (var (changeTime, changeBPM) in _bpmChanges!)
+        foreach (BPMChangeItem item in _bpmChanges!)
         {
-            if (time < changeTime) break;
+            if (time < item.Time) break;
             timeBPMIndex++;
-            bpm = changeBPM;
+            bpm = item.BPM;
         }
 
         float remainingBeats = _config.AlertDurationInBeats;
         float duration = CalculateDurationInBeats(bpm, remainingBeats);
         while (true)
         {
-            if (timeBPMIndex > 0 && (time - duration) < _bpmChanges![timeBPMIndex - 1].Item1)
+            if (timeBPMIndex > 0 && (time - duration) < _bpmChanges![timeBPMIndex - 1].Time)
             {
                 timeBPMIndex--;
-                float durationToPrevBPMChange = time - _bpmChanges![timeBPMIndex].Item1;
+                float durationToPrevBPMChange = time - _bpmChanges![timeBPMIndex].Time;
                 float beats = durationToPrevBPMChange / 60 * bpm;
                 remainingBeats -= beats;
-                time = _bpmChanges![timeBPMIndex].Item1;
-                bpm = _bpmChanges![timeBPMIndex].Item2;
+                time = _bpmChanges![timeBPMIndex].Time;
+                bpm = _bpmChanges![timeBPMIndex].BPM;
                 duration = CalculateDurationInBeats(bpm, remainingBeats);
             }
             else
