@@ -3,7 +3,7 @@
     <Import Project="CrouchAlert.csproj.user" Condition="Exists('CrouchAlert.csproj.user')"/>
 
     <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFramework>net48</TargetFramework>
         <!-- Some features of the latest version of C# aren't available in Beat Saber. Refer to the
         unity docs for info -->
         <!-- https://docs.unity3d.com/2022.3/Documentation/Manual/CSharpCompiler.html -->
@@ -33,6 +33,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Reference Include="CustomJSONData">
+          <HintPath>$(BeatSaberDir)\Plugins\CustomJSONData.dll</HintPath>
+        </Reference>
         <Reference Include="netstandard"/>
         <Reference Include="0Harmony">
             <HintPath>$(BeatSaberDir)\Libs\0Harmony.dll</HintPath>

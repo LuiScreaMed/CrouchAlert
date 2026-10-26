@@ -13,6 +13,7 @@
 - [BSIPA](https://github.com/nike4613/BeatSaber-IPA-Reloaded)
 - [BSML](https://github.com/monkeymanboy/BeatSaberMarkupLanguage)
 - [SiraUtil](https://github.com/Auros/SiraUtil)
+- [CustomJSONData](https://github.com/Aeroluna/CustomJSONData)
 
 ### 手动安装
 
