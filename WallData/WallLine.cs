@@ -15,6 +15,14 @@ internal struct WallLine
         if (CrouchWall.HasValue && CrouchWall.Value.EndTime < time) CrouchWall = null;
     }
 
+    public WallType Type => (NonBlockWall.HasValue, CrouchWall.HasValue,
+            BlockWall.HasValue) switch
+        {
+            (true, true, _) or (_, _, true) => WallType.Block,
+            (_, true, _) => WallType.Crouch,
+            _ => WallType.NonBlock
+        };
+
     public Wall? this[WallType wallType]
     {
         get => wallType switch

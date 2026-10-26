@@ -122,15 +122,7 @@ internal class CrouchAlertController : MonoBehaviour
         for (int i = 0; i <= 3; i++)
         {
             WallLine line = walls[i];
-            WallType type = (line[WallType.NonBlock].HasValue, line[WallType.Crouch].HasValue,
-                    line[WallType.Block].HasValue) switch
-                {
-                    (true, true, _) or (_, _, true) => WallType.Block,
-                    (_, true, _) => WallType.Crouch,
-                    _ => WallType.NonBlock
-                };
-
-            wallTypes[i] = type;
+            wallTypes[i] = line.Type;
         }
 
         return wallTypes;
