@@ -58,7 +58,7 @@ internal class CrouchAlertController : MonoBehaviour
         Init();
 
         _ready = true;
-        Plugin.Log.Info("Initialized");
+        Plugin.Log.Info("CrouchAlertController Initialized");
     }
 
     private void Init()
@@ -66,11 +66,9 @@ internal class CrouchAlertController : MonoBehaviour
         if (_readonlyBeatmapData.obstaclesCount <= 0) return;
         BuildBPMChanges();
         CalculateCrouches();
-        if (_crouches != null)
-        {
-            SetupUI();
-            SetupAudio();
-        }
+        if (_crouches == null) return;
+        SetupUI();
+        SetupAudio();
     }
 
     private void BuildBPMChanges()
@@ -141,19 +139,27 @@ internal class CrouchAlertController : MonoBehaviour
                 float crouchAlertTime = _config.UseBeatsAsAlertDurationUnit
                     ? CalculateAlertTimeInBeats(groupedCrouchWallFirstObstacle.time)
                     : groupedCrouchWallFirstObstacle.time - _config.AlertDurationInSeconds;
-                crouchAlertTime = Math.Max(0, crouchAlertTime);
+                crouchAlertTime = Math.Max(.05f, crouchAlertTime);
                 crouches.Add((crouchAlertTime, groupedCrouchWallFirstObstacle.time - crouchAlertTime));
             }
         }
 
         Plugin.Log.Info(
             $"Calculating done (in {Time.time - startTime} s). {obstacleCount} obstacle(s) in total. {(crouches.Count)} crouches needed");
-        if (crouches.Count > 0)
+        if (crouches.Count <= 0) return;
+        crouches.Add((_audioTimeSyncController.songLength + 100f, 0f));
+        if (_config.AlertFirstOnly)
         {
-            crouches.Add((_audioTimeSyncController.songLength + 100f, 0f));
-            _crouches = crouches.ToArray();
-            _nextCrouchIndex = 0;
+            Plugin.Log.Info(
+                $"Alert First Only enabled, alert the first crouch only");
+            _crouches = [crouches.First(), crouches.Last()];
         }
+        else
+        {
+            _crouches = crouches.ToArray();
+        }
+
+        _nextCrouchIndex = 0;
     }
 
     private WallTypes CalculateWallTypes(Walls walls)

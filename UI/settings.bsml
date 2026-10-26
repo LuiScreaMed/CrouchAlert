@@ -8,6 +8,13 @@
                 text-key="CROUCH_ALERT_ENABLE"
                 hover-hint-key="CROUCH_ALERT_ENABLE_HINT"
         />
+        <toggle-setting 
+                id="alertFirstOnlyToggle"
+                value="AlertFirstOnlyValue"
+                apply-on-change="true"
+                text-key="CROUCH_ALERT_ALERT_FIRST_ONLY"
+                hover-hint-key="CROUCH_ALERT_ALERT_FIRST_ONLY_HINT"
+        />
         <toggle-setting
                 id="strictModeToggle"
                 value="StrictModeValue"

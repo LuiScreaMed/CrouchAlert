@@ -39,7 +39,6 @@ internal class SettingsView : BSMLAutomaticViewController
     [Inject]
     public void Construct(PluginConfig config, AudioClipLoader audioClipLoader)
     {
-        Plugin.Log.Info("Construct called");
         _config = config;
 
         // Init minimum wall duration in beats dropdown
@@ -68,7 +67,6 @@ internal class SettingsView : BSMLAutomaticViewController
     [UIAction("#post-parse")]
     public void PostParse()
     {
-        Plugin.Log.Info("Post-parse called");
         UpdateUI();
     }
 
@@ -81,12 +79,31 @@ internal class SettingsView : BSMLAutomaticViewController
         {
             _config.Enable = value;
             _config.Changed();
+            UpdateUI();
+        }
+    }
+
+    #endregion
+
+    #region Control: Alert First Only Toggle
+
+    [UIComponent("alertFirstOnlyToggle")] private readonly ToggleSetting? _alertFirstOnlyToggle = null;
+
+    private bool AlertFirstOnlyValue
+    {
+        get => _config.AlertFirstOnly;
+        set
+        {
+            _config.AlertFirstOnly = value;
+            _config.Changed();
         }
     }
 
     #endregion
 
     #region Control: Strict Mode Toggle
+
+    [UIComponent("strictModeToggle")] private readonly ToggleSetting? _strictModeToggle = null;
 
     private bool StrictModeValue
     {
@@ -101,6 +118,9 @@ internal class SettingsView : BSMLAutomaticViewController
     #endregion
 
     #region Control: Alert Duration Unit Dropdown
+
+    [UIComponent("alertDurationUnitDropdown")]
+    private readonly DropDownListSetting? _alertDurationUnitDropdown = null;
 
     private List<string> AlertDurationUnitOptions => _alertDurationUnitOptions;
 
@@ -117,7 +137,7 @@ internal class SettingsView : BSMLAutomaticViewController
 
     #endregion
 
-    #region Control: Alert Duration In Beats Increment
+    #region Control: Alert Duration In Beats Slider
 
     [UIComponent("alertDurationInBeatsSlider")]
     private readonly SliderSetting? _alertDurationInBeatsSlider = null;
@@ -172,6 +192,8 @@ internal class SettingsView : BSMLAutomaticViewController
     #endregion
 
     #region Control: Enable Alert Sound Toggle
+
+    [UIComponent("alertSoundToggle")] private readonly ToggleSetting? _alertSoundToggle = null;
 
     private bool EnableAlertSoundValue
     {
@@ -254,6 +276,16 @@ internal class SettingsView : BSMLAutomaticViewController
 
     private void UpdateUI()
     {
+        // Enable
+        _alertFirstOnlyToggle?.Interactable = EnableValue;
+        _strictModeToggle?.Interactable = EnableValue;
+        _alertDurationUnitDropdown?.Interactable = EnableValue;
+        _alertDurationInBeatsSlider?.Interactable = EnableValue;
+        _alertDurationInSecondsSlider?.Interactable = EnableValue;
+        _minimumWallDurationInBeatsDropdown?.Interactable = EnableValue;
+        _alertSoundToggle?.Interactable = EnableValue;
+        _audioClipDropdown?.Interactable = EnableValue;
+        _volumeSlider?.Interactable = EnableValue;
         // Alert Duration
         _alertDurationInBeatsSlider?.gameObject.SetActive(_config.UseBeatsAsAlertDurationUnit);
         _alertDurationInSecondsSlider?.gameObject.SetActive(!_config.UseBeatsAsAlertDurationUnit);

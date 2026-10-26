@@ -11,6 +11,11 @@ public class PluginConfig
     /// Enable the mod
     /// </summary>
     public virtual bool Enable { get; set; } = true;
+    
+    /// <summary>
+    /// Alert the first crouch only in every beat map
+    /// </summary>
+    public virtual bool AlertFirstOnly { get; set; } = false;
 
     /// <summary>
     /// Enable strict mode, when enabled, only consider crouches with full lines of walls
