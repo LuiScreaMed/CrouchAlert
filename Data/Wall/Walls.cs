@@ -1,6 +1,7 @@
 using System;
+using CrouchAlert.Utils;
 
-namespace CrouchAlert.WallData;
+namespace CrouchAlert.Data.Wall;
 
 internal struct Walls
 {
@@ -48,7 +49,7 @@ internal struct Walls
 
         float endTime = obstacle.time + obstacle.duration + minimumDuration;
 
-        WallType wallType = WallTypeUtils.GetWallType(obstacle);
+        WallType wallType = WallUtils.GetWallType(obstacle);
 
         for (int i = 0; i <= 3; i++)
         {

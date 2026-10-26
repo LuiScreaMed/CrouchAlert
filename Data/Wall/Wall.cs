@@ -1,4 +1,4 @@
-namespace CrouchAlert.WallData;
+namespace CrouchAlert.Data.Wall;
 
 internal readonly struct Wall
 {

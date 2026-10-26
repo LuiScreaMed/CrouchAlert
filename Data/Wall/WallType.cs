@@ -1,6 +1,13 @@
 using System;
 
-namespace CrouchAlert.WallData;
+namespace CrouchAlert.Data.Wall;
+
+internal enum WallType
+{
+    NonBlock,
+    Crouch,
+    Block
+}
 
 internal struct WallTypes
 {

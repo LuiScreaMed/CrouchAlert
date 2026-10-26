@@ -1,6 +1,6 @@
 using System;
 
-namespace CrouchAlert.WallData;
+namespace CrouchAlert.Data.Wall;
 
 internal struct WallLine
 {

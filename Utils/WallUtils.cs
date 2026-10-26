@@ -1,13 +1,8 @@
-namespace CrouchAlert.WallData;
+using CrouchAlert.Data.Wall;
 
-internal enum WallType
-{
-    NonBlock,
-    Crouch,
-    Block
-}
+namespace CrouchAlert.Utils;
 
-internal static class WallTypeUtils
+internal static class WallUtils
 {
     public static WallType GetWallType(ObstacleData obstacle)
     {
