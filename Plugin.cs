@@ -29,9 +29,9 @@ internal class Plugin
         var pluginConfig = ipaConfig.Generated<PluginConfig>();
 
         zenjector.Install<AppInstaller>(Location.App, pluginConfig);
-        zenjector.Install<GameInstaller>(Location.Player);
+        zenjector.Install<GameInstaller>(Location.GameCore);
         zenjector.Install<MenuInstaller>(Location.Menu);
-        
+
         _harmony.PatchAll();
 
         Log.Info($"{pluginMetadata.Name} {pluginMetadata.HVersion} initialized.");
