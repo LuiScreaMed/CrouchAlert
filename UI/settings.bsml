@@ -9,62 +9,77 @@
                 hover-hint-key="CROUCH_ALERT_ENABLE_HINT"
         />
         <toggle-setting
-                id="useStrictModeToggle"
-                value="UseStrictModeValue"
+                id="strictModeToggle"
+                value="StrictModeValue"
                 apply-on-change="true"
                 text-key="CROUCH_ALERT_STRICT_MODE"
                 hover-hint-key="CROUCH_ALERT_STRICT_MODE_HINT"
         />
+        <dropdown-list-setting
+                id="alertDurationUnitDropdown"
+                value="AlertDurationUnitValue"
+                apply-on-change="true"
+                options="AlertDurationUnitOptions"
+                text-key="CROUCH_ALERT_ALERT_DURATION_UNIT"
+                hover-hint-key="CROUCH_ALERT_ALERT_DURATION_UNIT_HINT"
+            />
         <slider-setting
-                id="remindBeforeDurationIncrement"
-                value="RemindBeforeDurationValue"
+                id="alertDurationInBeatsSlider"
+                value="AlertDurationInBeatsValue"
+                apply-on-change="true"
+                min="1.0"
+                max="8.0"
+                increment="1.0"
+                show-buttons="true"
+                formatter="FormatBeats"
+                text-key="CROUCH_ALERT_ALERT_DURATION_IN_BEATS"
+                hover-hint-key="CROUCH_ALERT_ALERT_DURATION_IN_BEATS_HINT"
+        />
+        <slider-setting
+                id="alertDurationInSecondsSlider"
+                value="AlertDurationInSecondsValue"
                 apply-on-change="true"
                 min="0.5"
-                max="3.0"
+                max="5.0"
                 increment="0.05"
                 show-buttons="true"
                 formatter="FormatDuration"
-                text-key="CROUCH_ALERT_ALERT_DURATION"
-                hover-hint-key="CROUCH_ALERT_ALERT_DURATION_HINT"
+                text-key="CROUCH_ALERT_ALERT_DURATION_IN_SECONDS"
+                hover-hint-key="CROUCH_ALERT_ALERT_DURATION_IN_SECONDS_HINT"
         />
-        <slider-setting
-                id="extendWallsByDurationIncrement"
-                value="ExtendWallsByDurationValue"
+        <dropdown-list-setting
+                id="minimumWallDurationInBeatsDropdown"
+                value="MinimumWallDurationInBeatsValue"
                 apply-on-change="true"
-                min="0.1"
-                max="0.75"
-                increment="0.05"
-                show-buttons="true"
-                formatter="FormatDuration"
-                text-key="CROUCH_ALERT_EXTEND_WALLS_BY_DURATION"
-                hover-hint-key="CROUCH_ALERT_EXTEND_WALLS_BY_DURATION_HINT"
+                options="MinimumWallDurationInBeatsOptions"
+                text-key="CROUCH_ALERT_MINIMUM_WALL_DURATION_IN_BEATS"
+                hover-hint-key="CROUCH_ALERT_MINIMUM_WALL_DURATION_IN_BEATS_HINT"
         />
         <toggle-setting
-                id="enableRemindSoundToggle"
-                value="EnableRemindSoundValue"
+                id="enableAlertSoundToggle"
+                value="EnableAlertSoundValue"
                 apply-on-change="true"
                 text-key="CROUCH_ALERT_ENABLE_ALERT_SOUND"
                 hover-hint-key="CROUCH_ALERT_ENABLE_ALERT_SOUND_HINT"
         />
         <dropdown-list-setting
-                id="remindSoundAudioClipDropdown"
-                value="RemindSoundAudioClipValue"
+                id="alertSoundAudioClipDropdown"
+                value="AlertSoundAudioClipValue"
                 apply-on-change="true"
-                options="RemindSoundAudioClipOptions"
+                options="AlertSoundAudioClipOptions"
                 text-key="CROUCH_ALERT_ALERT_SOUND_AUDIO_CLIP"
                 hover-hint-key="CROUCH_ALERT_ALERT_SOUND_AUDIO_CLIP_HINT"
-                get-event="updateAudioClipOptions"
         />
         <text
-                id="remindSoundAudioClipNotFoundText"
+                id="alertSoundAudioClipNotFoundText"
                 text-key="CROUCH_ALERT_ALERT_SOUND_AUDIO_CLIP_NOT_FOUND"
                 font-size="3.5"
                 color="red"
                 align="BaselineRight"
         />
         <slider-setting
-                id="remindSoundVolumeSlider"
-                value="RemindSoundVolumeValue"
+                id="alertSoundVolumeSlider"
+                value="AlertSoundVolumeValue"
                 apply-on-change="true"
                 min="0.0"
                 max="1.0"

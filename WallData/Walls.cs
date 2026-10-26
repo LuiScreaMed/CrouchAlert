@@ -40,13 +40,13 @@ internal struct Walls
         }
     }
 
-    public void ApplyNewObstacle(ObstacleData obstacle, float addDuration = 0.3f)
+    public void ApplyNewObstacle(ObstacleData obstacle, float minimumDuration)
     {
         int startLine = Math.Max(0, obstacle.lineIndex);
         int endLine = Math.Min(obstacle.lineIndex + obstacle.width - 1, 3);
         if (startLine > endLine) return;
 
-        float endTime = obstacle.time + obstacle.duration + addDuration;
+        float endTime = obstacle.time + obstacle.duration + minimumDuration;
 
         WallType wallType = WallTypeUtils.GetWallType(obstacle);
 
