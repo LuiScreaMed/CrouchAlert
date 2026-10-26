@@ -50,13 +50,6 @@ internal class CrouchAlertController : MonoBehaviour
     {
         _config = config;
         _readonlyBeatmapData = beatmapData;
-        CustomBeatmapData customBeatmapData = (CustomBeatmapData)beatmapData;
-        Plugin.Log.Info("keys keys keys");
-        foreach (string key in customBeatmapData.beatmapCustomData.Keys)
-        {
-            Plugin.Log.Info(key);
-        }
-
         _audioClipLoader = audioClipLoader;
         _alertView = alertView;
         _beatmapLevel = beatmapLevel;
@@ -77,13 +70,11 @@ internal class CrouchAlertController : MonoBehaviour
         {
             SetupUI();
             SetupAudio();
-            // RegisterEvents();
         }
     }
 
     private void BuildBPMChanges()
     {
-        
         _bpmChanges = _readonlyBeatmapData.allBeatmapDataItems.OfType<BPMChangeBeatmapEventData>()
             .Select(data => (data.time, data.bpm)).ToArray();
         if (_bpmChanges.Length == 0 || _bpmChanges[0].Item1 != 0)
