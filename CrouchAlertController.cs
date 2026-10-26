@@ -7,6 +7,7 @@ using CrouchAlert.Data;
 using CrouchAlert.Data.Wall;
 using CrouchAlert.UI;
 using CrouchAlert.Utils;
+using CustomJSONData;
 using CustomJSONData.CustomBeatmap;
 using HMUI;
 using UnityEngine;
@@ -70,17 +71,46 @@ internal class CrouchAlertController : MonoBehaviour
 
     private void BuildBPMChanges()
     {
-        _bpmChanges = _readonlyBeatmapData.allBeatmapDataItems.OfType<BPMChangeBeatmapEventData>()
-            .Select(data => new BPMChangeItem(data.time, data.bpm)).ToArray();
+        Plugin.Log.Debug($"Building BPM Changes");
+        CustomBeatmapData customBeatmapData = (_readonlyBeatmapData as CustomBeatmapData)!;
+        if (customBeatmapData.version.IsVersion2() && customBeatmapData.customData.ContainsKey("_BPMChanges"))
+        {
+            CustomData customData = customBeatmapData.customData;
+            List<object>? bpmChanges = customData.Get<List<object>>("_BPMChanges");
+            if (bpmChanges == null)
+            {
+                _bpmChanges = [];
+            }
+            else
+            {
+                CustomData[] customBPMChanges = bpmChanges.Select(bpmChange => (CustomData)bpmChange).ToArray();
+                _bpmChanges = customBPMChanges.Select(customBPMChange =>
+                    new BPMChangeItem(
+                        CalculateDurationInBeats(
+                            _beatmapLevel.beatsPerMinute,
+                            customBPMChange.Get<float>("_time")
+                        ),
+                        customBPMChange.Get<float>("_BPM"))
+                ).ToArray();
+            }
+        }
+        else
+        {
+            _bpmChanges = _readonlyBeatmapData.allBeatmapDataItems.OfType<BPMChangeBeatmapEventData>()
+                .Select(data => new BPMChangeItem(data.time, data.bpm)).ToArray();
+        }
+
         if (_bpmChanges.Length == 0 || _bpmChanges[0].Time != 0)
         {
             _bpmChanges = _bpmChanges.Prepend(new BPMChangeItem(0, _beatmapLevel.beatsPerMinute)).ToArray();
         }
+
+        Plugin.Log.Debug($"BPM Changes: {_bpmChanges.Length}");
     }
 
     private void CalculateCrouches()
     {
-        Plugin.Log.Info("Reading map data, calculating crouches");
+        Plugin.Log.Debug("Calculating crouches");
         float startTime = Time.time;
         HashSet<CrouchItem> crouches = new();
         Walls currentWalls = new Walls();
