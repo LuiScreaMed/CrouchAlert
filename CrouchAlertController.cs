@@ -86,7 +86,7 @@ internal class CrouchAlertController : MonoBehaviour
                 CustomData[] customBPMChanges = bpmChanges.Select(bpmChange => (CustomData)bpmChange).ToArray();
                 _bpmChanges = customBPMChanges.Select(customBPMChange =>
                     new BPMChangeItem(
-                        CalculateDurationInBeats(
+                        BeatTimeUtils.BeatsToDuration(
                             _beatmapLevel.beatsPerMinute,
                             customBPMChange.Get<float>("_time")
                         ),
@@ -118,7 +118,7 @@ internal class CrouchAlertController : MonoBehaviour
         float bpm = _bpmChanges![0].BPM;
         int nextBPMChangeIndex = 0;
         // Minimum wall duration, add .005s margin
-        float minimumDuration = CalculateDurationInBeats(bpm, _config.MinimumWallDurationInBeats) + 0.01f;
+        float minimumDuration = BeatTimeUtils.BeatsToDuration(bpm, _config.MinimumWallDurationInBeats) + 0.01f;
         // Use group crouch wall to get the first obstacle that need a crouch
         ObstacleData? groupedCrouchWallFirstObstacle = null;
         int groupedCrouchWallCount = 0;
@@ -131,7 +131,7 @@ internal class CrouchAlertController : MonoBehaviour
             if (nextBPMChangeIndex != -1 && obstacle.time >= _bpmChanges[nextBPMChangeIndex].Time)
             {
                 bpm = _bpmChanges[nextBPMChangeIndex++].BPM;
-                minimumDuration = CalculateDurationInBeats(bpm, _config.MinimumWallDurationInBeats) + 0.01f;
+                minimumDuration = BeatTimeUtils.BeatsToDuration(bpm, _config.MinimumWallDurationInBeats) + 0.01f;
                 if (nextBPMChangeIndex >= _bpmChanges.Length) nextBPMChangeIndex = -1;
             }
 
@@ -162,7 +162,7 @@ internal class CrouchAlertController : MonoBehaviour
             if (NeedCrouch(currentWallTypes) && groupedCrouchWallFirstObstacle != null)
             {
                 float alertTime = _config.UseBeatsAsAlertDurationUnit
-                    ? CalculateAlertTimeInBeats(groupedCrouchWallFirstObstacle.time)
+                    ? BeatTimeUtils.TimeBeforeBeats(groupedCrouchWallFirstObstacle.time, _config.AlertDurationInBeats, _bpmChanges!)
                     : groupedCrouchWallFirstObstacle.time - _config.AlertDurationInSeconds;
                 alertTime = Math.Max(.05f, alertTime);
                 crouches.Add(new CrouchItem(alertTime, groupedCrouchWallFirstObstacle.time - alertTime));
@@ -289,48 +289,6 @@ internal class CrouchAlertController : MonoBehaviour
             _alertView.CountDownText = Formatter.FormatFloatSecond(Math.Max(0f, time - (Time.time - startTime)));
             yield return new WaitForSeconds(0.05f);
         }
-    }
-
-    private static float CalculateDurationInBeats(float bpm, float beats) => 60.0f / bpm * beats;
-
-    /// <summary>
-    /// Calculate alert time, handle situation when the duration in beats crosses between different BPMs
-    /// </summary>
-    /// <param name="time">Obstacle time</param>
-    /// <returns></returns>
-    private float CalculateAlertTimeInBeats(float time)
-    {
-        int timeBPMIndex = 0;
-        float bpm = 0f;
-        foreach (BPMChangeItem item in _bpmChanges!)
-        {
-            if (time < item.Time) break;
-            timeBPMIndex++;
-            bpm = item.BPM;
-        }
-
-        float remainingBeats = _config.AlertDurationInBeats;
-        float duration = CalculateDurationInBeats(bpm, remainingBeats);
-        while (true)
-        {
-            if (timeBPMIndex > 0 && (time - duration) < _bpmChanges![timeBPMIndex - 1].Time)
-            {
-                timeBPMIndex--;
-                float durationToPrevBPMChange = time - _bpmChanges![timeBPMIndex].Time;
-                float beats = durationToPrevBPMChange / 60 * bpm;
-                remainingBeats -= beats;
-                time = _bpmChanges![timeBPMIndex].Time;
-                bpm = _bpmChanges![timeBPMIndex].BPM;
-                duration = CalculateDurationInBeats(bpm, remainingBeats);
-            }
-            else
-            {
-                time -= duration;
-                break;
-            }
-        }
-
-        return time;
     }
 
     private void OnDestroy()
