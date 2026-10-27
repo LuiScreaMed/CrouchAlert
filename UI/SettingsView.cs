@@ -24,12 +24,12 @@ internal class SettingsView : BSMLAutomaticViewController
         LocalizedTexts.AlertDurationUnit.Beats
     };
 
-    // Minimum Wall Duration
-    private readonly Dictionary<float, string> _minimumWallDurationInBeatsMap = new()
+    // Crouch Wall Grouping Threshold
+    private readonly Dictionary<float, string> _crouchWallGroupingThresholdMap = new()
     {
-        { .25f, LocalizedTexts.MinimumWallDurationInBeatsOption.OneQuarter },
-        { .5f, LocalizedTexts.MinimumWallDurationInBeatsOption.OneHalf },
-        { 1f, LocalizedTexts.MinimumWallDurationInBeatsOption.One }
+        { .25f, LocalizedTexts.CrouchWallGroupingThresholdOption.OneQuarter },
+        { .5f, LocalizedTexts.CrouchWallGroupingThresholdOption.OneHalf },
+        { 1f, LocalizedTexts.CrouchWallGroupingThresholdOption.One }
     };
 
     // Alert Audio
@@ -41,11 +41,11 @@ internal class SettingsView : BSMLAutomaticViewController
     {
         _config = config;
 
-        // Init minimum wall duration in beats dropdown
-        if (!_minimumWallDurationInBeatsMap.ContainsKey(_config.MinimumWallDurationInBeats))
+        // Init crouch wall grouping threshold dropdown
+        if (!_crouchWallGroupingThresholdMap.ContainsKey(_config.CrouchWallGroupingThreshold))
         {
-            _minimumWallDurationInBeatsMap.Add(_config.MinimumWallDurationInBeats,
-                LocalizedTexts.MinimumWallDurationInBeatsOption.N(_config.MinimumWallDurationInBeats));
+            _crouchWallGroupingThresholdMap.Add(_config.CrouchWallGroupingThreshold,
+                LocalizedTexts.CrouchWallGroupingThresholdOption.N(_config.CrouchWallGroupingThreshold));
         }
 
         // Init audio clip dropdown
@@ -171,20 +171,20 @@ internal class SettingsView : BSMLAutomaticViewController
 
     #endregion
 
-    #region Control: Minimum Wall Duration Dropdown
+    #region Control: Crouch Wall Grouping Threshold Dropdown
 
-    [UIComponent("minimumWallDurationInBeatsDropdown")]
-    private readonly DropDownListSetting? _minimumWallDurationInBeatsDropdown = null;
+    [UIComponent("crouchWallGroupingThresholdDropdown")]
+    private readonly DropDownListSetting? _crouchWallGroupingThresholdDropdown = null;
 
-    private List<string> MinimumWallDurationInBeatsOptions => _minimumWallDurationInBeatsMap.Values.ToList();
+    private List<string> CrouchWallGroupingThresholdOptions => _crouchWallGroupingThresholdMap.Values.ToList();
 
-    private string MinimumWallDurationInBeatsValue
+    private string CrouchWallGroupingThresholdValue
     {
-        get => _minimumWallDurationInBeatsMap[_config.MinimumWallDurationInBeats];
+        get => _crouchWallGroupingThresholdMap[_config.CrouchWallGroupingThreshold];
         set
         {
-            _config.MinimumWallDurationInBeats =
-                _minimumWallDurationInBeatsMap.Keys.First(key => _minimumWallDurationInBeatsMap[key] == value);
+            _config.CrouchWallGroupingThreshold =
+                _crouchWallGroupingThresholdMap.Keys.First(key => _crouchWallGroupingThresholdMap[key] == value);
             _config.Changed();
         }
     }
@@ -282,14 +282,14 @@ internal class SettingsView : BSMLAutomaticViewController
         _alertDurationUnitDropdown?.Interactable = EnableValue;
         _alertDurationInBeatsSlider?.Interactable = EnableValue;
         _alertDurationInSecondsSlider?.Interactable = EnableValue;
-        _minimumWallDurationInBeatsDropdown?.Interactable = EnableValue;
+        _crouchWallGroupingThresholdDropdown?.Interactable = EnableValue;
         _alertSoundToggle?.Interactable = EnableValue;
         _audioClipDropdown?.Interactable = EnableValue;
         _volumeSlider?.Interactable = EnableValue;
         // Alert Duration
         _alertDurationInBeatsSlider?.gameObject.SetActive(_config.UseBeatsAsAlertDurationUnit);
         _alertDurationInSecondsSlider?.gameObject.SetActive(!_config.UseBeatsAsAlertDurationUnit);
-        _minimumWallDurationInBeatsDropdown?.UpdateChoices();
+        _crouchWallGroupingThresholdDropdown?.UpdateChoices();
         // Audio
         _audioNotFoundText?.rectTransform.gameObject.SetActive(EnableAlertSoundValue && AlertSoundAudioClipNotFound);
         _audioClipDropdown?.UpdateChoices();

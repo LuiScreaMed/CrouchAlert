@@ -17,4 +17,17 @@ internal static class WallUtils
                 return WallType.NonBlock;
         }
     }
+    
+    public static WallTypes GetWallTypes(Walls walls)
+    {
+        WallTypes wallTypes = new WallTypes();
+
+        for (int i = 0; i <= 3; i++)
+        {
+            WallLine line = walls[i];
+            wallTypes[i] = line.Type;
+        }
+
+        return wallTypes;
+    }
 }

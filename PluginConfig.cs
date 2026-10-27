@@ -11,7 +11,7 @@ public class PluginConfig
     /// Enable the mod
     /// </summary>
     public virtual bool Enable { get; set; } = true;
-    
+
     /// <summary>
     /// Alert the first crouch only in every beat map
     /// </summary>
@@ -38,9 +38,9 @@ public class PluginConfig
     public virtual float AlertDurationInSeconds { get; set; } = 1.5f;
 
     /// <summary>
-    /// Consider brief walls' durations as this duration(in beats), to be able to calculate crouches with continuous brief walls as groups
+    /// Crouch walls whose spawn time difference is less than this and whose spawn lines are adjacent or overlapping are grouped together
     /// </summary>
-    public virtual float MinimumWallDurationInBeats { get; set; } = .5f;
+    public virtual float CrouchWallGroupingThreshold { get; set; } = .5f;
 
     /// <summary>
     /// Play a sound when alert

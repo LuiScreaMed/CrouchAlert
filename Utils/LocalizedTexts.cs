@@ -16,19 +16,19 @@ internal static class LocalizedTexts
         public static string N(float n) => string.Format(Get("CROUCH_ALERT_FORMAT_BEATS_N_BEATS"), n);
     }
 
-    public static class MinimumWallDurationInBeatsOption
+    public static class CrouchWallGroupingThresholdOption
     {
         public static string OneQuarter =>
-            Get("CROUCH_ALERT_MINIMUM_WALL_DURATION_IN_BEATS_OPTION_1_4_OF_A_BEAT");
+            Get("CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD_OPTION_1_4_OF_A_BEAT");
 
         public static string OneHalf =>
-            Get("CROUCH_ALERT_MINIMUM_WALL_DURATION_IN_BEATS_OPTION_1_2_OF_A_BEAT");
+            Get("CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD_OPTION_1_2_OF_A_BEAT");
 
         public static string One =>
-            Get("CROUCH_ALERT_MINIMUM_WALL_DURATION_IN_BEATS_OPTION_1_BEAT");
+            Get("CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD_OPTION_1_BEAT");
 
         public static string N(float n) =>
-            string.Format(Get("CROUCH_ALERT_MINIMUM_WALL_DURATION_IN_BEATS_OPTION_N_BEATS"), n);
+            string.Format(Get("CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD_OPTION_N_BEATS"), n);
     }
 
     public static string AudioClipNone => Get("CROUCH_ALERT_AUDIO_CLIP_NONE");

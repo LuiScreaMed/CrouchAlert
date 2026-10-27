@@ -27,13 +27,15 @@ internal static class BeatTimeUtils
         foreach (BPMChangeItem item in bpmChanges)
         {
             if (startTime < item.Time) break;
-            index++;
-            bpm = bpmChanges[index].BPM;
+            if (index < bpmChanges.Length - 1)
+            {
+                index++;
+                bpm = bpmChanges[index].BPM;
+            }
         }
 
-        while (bpmChanges[index + 1].Time < endTime)
+        while (index < bpmChanges.Length - 1 && bpmChanges[index + 1].Time < endTime)
         {
-            if (index == bpmChanges.Length - 1) break;
             float duration = bpmChanges[index + 1].Time - startTime;
             startTime = bpmChanges[index + 1].Time;
             beats += DurationToBeats(bpm, duration);

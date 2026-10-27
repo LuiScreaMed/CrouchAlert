@@ -55,12 +55,12 @@
                 hover-hint-key="CROUCH_ALERT_ALERT_DURATION_IN_SECONDS_HINT"
         />
         <dropdown-list-setting
-                id="minimumWallDurationInBeatsDropdown"
-                value="MinimumWallDurationInBeatsValue"
+                id="crouchWallGroupingThresholdDropdown"
+                value="CrouchWallGroupingThresholdValue"
                 apply-on-change="true"
-                options="MinimumWallDurationInBeatsOptions"
-                text-key="CROUCH_ALERT_MINIMUM_WALL_DURATION_IN_BEATS"
-                hover-hint-key="CROUCH_ALERT_MINIMUM_WALL_DURATION_IN_BEATS_HINT"
+                options="CrouchWallGroupingThresholdOptions"
+                text-key="CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD"
+                hover-hint-key="CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD_HINT"
         />
         <toggle-setting
                 id="enableAlertSoundToggle"
