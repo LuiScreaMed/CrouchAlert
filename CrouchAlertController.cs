@@ -20,6 +20,7 @@ internal class CrouchAlertController : MonoBehaviour
     private PluginConfig _config = null!;
 
     private IReadonlyBeatmapData _readonlyBeatmapData = null!;
+    private CustomBeatmapData? _customBeatmapData = null;
 
     private AudioClipLoader _audioClipLoader = null!;
     private AlertView _alertView = null!;
@@ -35,6 +36,7 @@ internal class CrouchAlertController : MonoBehaviour
 
     private FloatingScreen _floatingScreen = null!;
 
+    private bool _requireNoodleExtensions = false;
     private bool _ready = false;
     private bool _alerting = false;
 
@@ -49,6 +51,27 @@ internal class CrouchAlertController : MonoBehaviour
         _alertView = alertView;
         _beatmapLevel = beatmapLevel;
         _audioTimeSyncController = audioTimeSyncController;
+
+        if (_readonlyBeatmapData is CustomBeatmapData customBeatmapData)
+        {
+            _customBeatmapData = customBeatmapData;
+
+            if (customBeatmapData.beatmapCustomData.ContainsKey("_requirements"))
+            {
+                try
+                {
+                    string[] castedRequirements = customBeatmapData.beatmapCustomData.Get<List<object>>("_requirements")
+                        !.Select(item => item.ToString()).ToArray();
+                    _requireNoodleExtensions = castedRequirements.Contains("Noodle Extensions");
+                }
+                catch (Exception e)
+                {
+                    Plugin.Log.Error(
+                        "The beat map has _requirements custom data string list, but can't convert it into string array");
+                    Plugin.Log.Error(e);
+                }
+            }
+        }
 
         Init();
 
@@ -70,9 +93,10 @@ internal class CrouchAlertController : MonoBehaviour
     {
         // Turn beat map bpm change events into a bpmChanges array
         Plugin.Log.Debug($"Building BPM Changes");
-        if (_readonlyBeatmapData is CustomBeatmapData customBeatmapData && customBeatmapData.version.IsVersion2() && customBeatmapData.customData.ContainsKey("_BPMChanges"))
+        if (_customBeatmapData != null && _customBeatmapData.version.IsVersion2() &&
+            _customBeatmapData.customData.ContainsKey("_BPMChanges"))
         {
-            CustomData customData = customBeatmapData.customData;
+            CustomData customData = _customBeatmapData.customData;
             List<object>? bpmChanges = customData.Get<List<object>>("_BPMChanges");
             if (bpmChanges == null)
             {
@@ -80,15 +104,25 @@ internal class CrouchAlertController : MonoBehaviour
             }
             else
             {
-                CustomData[] customBPMChanges = bpmChanges.Select(bpmChange => (CustomData)bpmChange).ToArray();
-                _bpmChanges = customBPMChanges.Select(customBPMChange =>
-                    new BPMChangeItem(
-                        BeatTimeUtils.BeatsToDuration(
-                            _beatmapLevel.beatsPerMinute,
-                            customBPMChange.Get<float>("_time")
-                        ),
-                        customBPMChange.Get<float>("_BPM"))
-                ).ToArray();
+                try
+                {
+                    CustomData[] customBPMChanges = bpmChanges.Select(bpmChange => (CustomData)bpmChange).ToArray();
+                    _bpmChanges = customBPMChanges.Select(customBPMChange =>
+                        new BPMChangeItem(
+                            BeatTimeUtils.BeatsToDuration(
+                                _beatmapLevel.beatsPerMinute,
+                                customBPMChange.Get<float>("_time")
+                            ),
+                            customBPMChange.Get<float>("_BPM"))
+                    ).ToArray();
+                }
+                catch (Exception e)
+                {
+                    _bpmChanges = [];
+                    Plugin.Log.Error(
+                        "The beat map version is <= 2.*, but can't get and convert _BPMChanges array into CustomData");
+                    Plugin.Log.Error(e);
+                }
             }
         }
         else
@@ -113,28 +147,80 @@ internal class CrouchAlertController : MonoBehaviour
         int obstacleCount = 0;
 
         // Pre-process:
+        // Add limited support for NoodleExtensions
         // Trim obstacles, split long crouch obstacles into smaller obstacles
         Plugin.Log.Debug("Pre-processing obstacles");
         List<ObstacleData> processedObstacles = new();
-        foreach (ObstacleData obstacle in _readonlyBeatmapData.allBeatmapDataItems.OfType<ObstacleData>())
+        foreach (ObstacleData o in _readonlyBeatmapData.allBeatmapDataItems.OfType<ObstacleData>())
         {
             obstacleCount++;
+
+            ObstacleData obstacle = o;
+            // Noodle Extensions
+            if (_requireNoodleExtensions && obstacle is CustomObstacleData customObstacle)
+            {
+                try
+                {
+                    int lineIndex = obstacle.lineIndex;
+                    NoteLineLayer lineLayer = obstacle.lineLayer;
+                    int width = obstacle.width;
+                    int height = obstacle.height;
+                    if (customObstacle.customData.ContainsKey("coordinates"))
+                    {
+                        List<float> coordinates = customObstacle.customData.Get<List<object>>("coordinates")!
+                            .Select(item => Convert.ToSingle(item)).ToList();
+                        lineIndex = Convert.ToInt32(Math.Round(coordinates[0])) + 2;
+                        lineLayer = coordinates[1] switch
+                        {
+                            > 3.5f or < 0.5f => NoteLineLayer.Base,
+                            >= 2f and <= 3.5f => NoteLineLayer.Top,
+                            _ => NoteLineLayer.Upper
+                        };
+                    }
+
+                    if (customObstacle.customData.ContainsKey("size"))
+                    {
+                        List<float> size = customObstacle.customData.Get<List<object>>("size")!
+                            .Select(item => Convert.ToSingle(item)).ToList();
+                        width = Convert.ToInt32(Math.Round(size[0]));
+                        height = Convert.ToInt32(Math.Round(size[1]));
+                    }
+
+                    obstacle = new ObstacleData(
+                        obstacle.time,
+                        obstacle.beat,
+                        obstacle.endBeat,
+                        obstacle.rotation,
+                        lineIndex,
+                        lineLayer,
+                        obstacle.duration,
+                        width,
+                        height
+                    );
+                }
+                catch (Exception e)
+                {
+                    Plugin.Log.Error("Failed to handle noodle extensions data from a custom obstacle");
+                    Plugin.Log.Error(e);
+                }
+            }
+            
+            // Trim
             ObstacleData? trimedObstacle = ObstacleUtils.Trim(obstacle);
             if (trimedObstacle == null) continue;
 
+            // Split
             if (obstacle.lineLayer != NoteLineLayer.Top)
             {
                 processedObstacles.Add(obstacle);
                 continue;
             }
-
             if (BeatTimeUtils.BeatsBetween(obstacle.time, obstacle.time + obstacle.duration, bpmChanges) <=
                 _config.CrouchWallGroupingThreshold)
             {
                 processedObstacles.Add(obstacle);
                 continue;
             }
-
             List<ObstacleData> splitObstacles =
                 ObstacleUtils.SplitObstacleByBeats(obstacle, _config.CrouchWallGroupingThreshold, bpmChanges);
             foreach (ObstacleData splitObstacle in splitObstacles)
@@ -175,7 +261,7 @@ internal class CrouchAlertController : MonoBehaviour
 
                 groupedCrouchObstacle = obstacle;
                 lastCrouchObstacleTime = obstacle.time;
-                
+
                 // Plugin.Log.Debug(
                 //     $"??? Not Grouped\nIn coming crouch wall: time={obstacle.time}, endTime={obstacle.time + obstacle.duration}, lineIndex={obstacle.lineIndex}, width={obstacle.width}\nGrouped crouch wall: {groupedCrouchObstacle.time}, endTime={groupedCrouchObstacle.time + groupedCrouchObstacle.duration}, lineIndex={groupedCrouchObstacle.lineIndex}, width={groupedCrouchObstacle.width}");
                 continue;
@@ -203,14 +289,15 @@ internal class CrouchAlertController : MonoBehaviour
                 groupedCrouchObstacle.height
             );
             lastCrouchObstacleTime = obstacle.time;
-            
+
             // Plugin.Log.Debug(
             //     $"!!! Grouped!\nIn coming crouch wall: time={obstacle.time}, endTime={obstacle.time + obstacle.duration}, lineIndex={obstacle.lineIndex}, width={obstacle.width}\nGrouped crouch wall: {groupedCrouchObstacle.time}, endTime={groupedCrouchObstacle.time + groupedCrouchObstacle.duration}, lineIndex={groupedCrouchObstacle.lineIndex}, width={groupedCrouchObstacle.width}");
         }
+
         groupedObstacles.Add(groupedCrouchObstacle!);
-        
+
         groupedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
-        
+
         // Calculating Crouches:
         Plugin.Log.Debug("Calculating crouches");
         HashSet<CrouchItem> crouches = new();
