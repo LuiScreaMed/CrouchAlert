@@ -2,7 +2,9 @@
 
 [English](./README.md) | 简体中文
 
-一个用于警告即将到来的需要下蹲的墙的节奏光剑 Mod。支持 PC 版本节奏光剑 1.40.8。在 Noodle/Mapping Extensions 谱面中可能无法正常工作。
+**前方下蹲！！！**
+
+一个用于警告即将到来的需要下蹲的墙的节奏光剑 Mod。支持 PC 版本节奏光剑 1.40.8。在 NoodleExtensions 谱面中可能无法正常工作。
 
 ## 安装
 
@@ -45,7 +47,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
     <PropertyGroup>
-        <!-- Change this path if necessary. -->
+        <!-- 将该属性改为你的节奏光剑路径 -->
         <BeatSaberDir>Path/To/Your/BeatSaber</BeatSaberDir>
     </PropertyGroup>
 </Project>

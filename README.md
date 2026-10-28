@@ -2,7 +2,9 @@
 
 English | [简体中文](./README_zh.md)
 
-A Beat Saber mod to alert incoming crouching walls. Supports Beat Saber 1.40.8 on PC. May not work correctly in Noodle/Mapping Extensions maps.
+**INCOMING CROUCH!!!**
+
+A Beat Saber mod to alert incoming crouching walls. Supports Beat Saber 1.40.8 on PC. May not work correctly in NoodleExtensions maps.
 
 ## Installation
 
@@ -45,7 +47,7 @@ Before building, create the file `CrouchAlert.csproj.user` in the project direct
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
     <PropertyGroup>
-        <!-- Change this path if necessary. -->
+        <!-- Change this to the path to your beat saber. -->
         <BeatSaberDir>Path/To/Your/BeatSaber</BeatSaberDir>
     </PropertyGroup>
 </Project>
