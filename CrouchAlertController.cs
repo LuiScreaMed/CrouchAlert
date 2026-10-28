@@ -286,7 +286,7 @@ internal class CrouchAlertController : MonoBehaviour
     private List<ObstacleData> GroupObstacles(List<ObstacleData> obstacles)
     {
         // Grouping crouch obstacles:
-        // 1. Group up nearby obstacles if their lines are overlapping or next to each other (not including identical lines obstacles)[1]
+        // 1. Group up nearby obstacles if their spawn lines are overlapping or next to each other (not including identical lines obstacles)[1]
         // and with spawn time gap under the value of CrouchWallGroupingThreshold
         // [1]: To avoid grouping a very long crouch obstacle into a massive obstacle 
         Plugin.Log.Debug("Grouping crouch obstacles");
@@ -305,7 +305,7 @@ internal class CrouchAlertController : MonoBehaviour
             if (
                 groupedCrouchObstacle == null ||
                 BeatTimeUtils.BeatsBetween(lastCrouchObstacleTime, obstacle.time, _bpmChanges!) > groupingThreshold ||
-                !ObstacleUtils.AreOverlappingOrNextTo(groupedCrouchObstacle, obstacle)
+                !ObstacleUtils.AreSpawnLinesOverlappingOrNextTo(groupedCrouchObstacle, obstacle)
             )
             {
                 if (groupedCrouchObstacle != null)
@@ -347,10 +347,53 @@ internal class CrouchAlertController : MonoBehaviour
             // Plugin.Log.Debug(
             //     $"!!! Grouped!\nIn coming crouch wall: time={obstacle.time}, endTime={obstacle.time + obstacle.duration}, lineIndex={obstacle.lineIndex}, width={obstacle.width}\nGrouped crouch wall: {groupedCrouchObstacle.time}, endTime={groupedCrouchObstacle.time + groupedCrouchObstacle.duration}, lineIndex={groupedCrouchObstacle.lineIndex}, width={groupedCrouchObstacle.width}");
         }
-
         groupedObstacles.Add(groupedCrouchObstacle!);
         groupedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
 
+        // 2. Group up repeat obstacles (merge the split obstacles in pre-process)
+        obstacles = groupedObstacles;
+        groupedObstacles = new();
+        foreach (ObstacleData obstacle in obstacles)
+        {
+            if (obstacle.lineLayer != NoteLineLayer.Top)
+            {
+                groupedObstacles.Add(obstacle);
+                continue;
+            }
+            
+            if (
+                groupedCrouchObstacle == null ||
+                BeatTimeUtils.BeatsBetween(lastCrouchObstacleTime, obstacle.time, _bpmChanges!) > groupingThreshold ||
+                !ObstacleUtils.AreSpawnLinesIdentical(groupedCrouchObstacle, obstacle)
+            )
+            {
+                if (groupedCrouchObstacle != null)
+                {
+                    groupedObstacles.Add(groupedCrouchObstacle);
+                }
+                groupedCrouchObstacle = obstacle;
+                lastCrouchObstacleTime = obstacle.time;
+                continue;
+            }
+            float duration = Math.Max(
+                groupedCrouchObstacle.time + groupedCrouchObstacle.duration,
+                obstacle.time + obstacle.duration
+            ) - groupedCrouchObstacle.time;
+            groupedCrouchObstacle = new ObstacleData(
+                groupedCrouchObstacle.time,
+                groupedCrouchObstacle.beat,
+                Math.Max(groupedCrouchObstacle.endBeat, obstacle.endBeat),
+                groupedCrouchObstacle.rotation,
+                groupedCrouchObstacle.lineIndex,
+                NoteLineLayer.Top,
+                duration,
+                groupedCrouchObstacle.width,
+                groupedCrouchObstacle.height
+            );
+            lastCrouchObstacleTime = obstacle.time;
+        }
+        groupedObstacles.Add(groupedCrouchObstacle!);
+        groupedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
         return groupedObstacles;
     }
 

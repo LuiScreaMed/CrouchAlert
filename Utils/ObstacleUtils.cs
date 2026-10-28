@@ -6,17 +6,22 @@ namespace CrouchAlert.Utils;
 
 internal static class ObstacleUtils
 {
-    public static bool AreOverlappingOrNextTo(ObstacleData obstacle1, ObstacleData obstacle2)
+    public static bool AreSpawnLinesOverlappingOrNextTo(ObstacleData obstacle1, ObstacleData obstacle2)
     {
-        bool connected =
-            obstacle1.lineIndex <= obstacle2.lineIndex + obstacle2.width &&
-            obstacle1.lineIndex + obstacle1.width >= obstacle2.lineIndex;
+        bool adjacent =
+            obstacle1.lineIndex == obstacle2.lineIndex + obstacle2.width ||
+            obstacle2.lineIndex == obstacle1.lineIndex + obstacle1.width;
 
-        bool identical =
-            obstacle1.lineIndex == obstacle2.lineIndex &&
-            obstacle1.width == obstacle2.width;
+        return adjacent ||
+               (obstacle1.lineIndex < obstacle2.lineIndex + obstacle2.width &&
+                obstacle1.lineIndex + obstacle1.width > obstacle2.lineIndex &&
+                obstacle1.lineIndex != obstacle2.lineIndex &&
+                obstacle1.lineIndex + obstacle1.width != obstacle2.lineIndex + obstacle2.width);
+    }
 
-        return connected && !identical;
+    public static bool AreSpawnLinesIdentical(ObstacleData obstacle1, ObstacleData obstacle2)
+    {
+        return obstacle1.lineIndex == obstacle2.lineIndex && obstacle1.width == obstacle2.width;
     }
 
     /// <summary>
