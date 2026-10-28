@@ -212,16 +212,21 @@ internal class CrouchAlertController : MonoBehaviour
     {
         return WallUtils.GetWallTypes(walls).ToTuple() switch
         {
-            (WallType.Crouch, WallType.Block, WallType.Block, WallType.Block) or
-                (WallType.Crouch, WallType.Crouch, WallType.Block, WallType.Block) or
+            (WallType.Crouch, WallType.Crouch, WallType.Crouch, WallType.Crouch) or
                 (WallType.Crouch, WallType.Crouch, WallType.Crouch, WallType.Block) or
-                (WallType.Crouch, WallType.Crouch, WallType.Crouch, WallType.Crouch) or
+                (WallType.Crouch, WallType.Crouch, WallType.Block, WallType.Crouch) or
+                (WallType.Crouch, WallType.Crouch, WallType.Block, WallType.Block) or
+                (WallType.Crouch, WallType.Block, WallType.Crouch, WallType.Crouch) or
+                (WallType.Crouch, WallType.Block, WallType.Crouch, WallType.Block) or
+                (WallType.Crouch, WallType.Block, WallType.Block, WallType.Crouch) or
+                (WallType.Crouch, WallType.Block, WallType.Block, WallType.Block) or
                 (WallType.Block, WallType.Crouch, WallType.Crouch, WallType.Crouch) or
-                (WallType.Block, WallType.Block, WallType.Crouch, WallType.Crouch) or
-                (WallType.Block, WallType.Block, WallType.Block, WallType.Crouch) or
                 (WallType.Block, WallType.Crouch, WallType.Crouch, WallType.Block) or
+                (WallType.Block, WallType.Crouch, WallType.Block, WallType.Crouch) or
                 (WallType.Block, WallType.Crouch, WallType.Block, WallType.Block) or
-                (WallType.Block, WallType.Block, WallType.Crouch, WallType.Block)
+                (WallType.Block, WallType.Block, WallType.Crouch, WallType.Crouch) or
+                (WallType.Block, WallType.Block, WallType.Crouch, WallType.Block) or
+                (WallType.Block, WallType.Block, WallType.Block, WallType.Crouch)
                 => true,
             (_, WallType.Crouch, WallType.Crouch, _) => _config.StrictMode ? false : true,
             _ => false
