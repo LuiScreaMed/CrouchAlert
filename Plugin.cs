@@ -1,5 +1,6 @@
 ﻿using CrouchAlert.Installers;
 using HarmonyLib;
+using Hive.Versioning;
 using IPA;
 using IPA.Config.Stores;
 using IPA.Loader;
@@ -16,12 +17,15 @@ internal class Plugin
 
     private readonly Harmony _harmony = new("com.luiscreamed.crouch-alert");
 
+    internal static Version Version { get; private set; } = null!;
+
     // Methods with [Init] are called when the plugin is first loaded by IPA.
     // All the parameters are provided by IPA and are optional.
     // The constructor is called before any method with [Init]. Only use [Init] with one constructor.
     [Init]
     public Plugin(IpaLogger ipaLogger, IpaConfig ipaConfig, Zenjector zenjector, PluginMetadata pluginMetadata)
     {
+        Version = pluginMetadata.HVersion;
         Log = ipaLogger;
         zenjector.UseLogger(Log);
 

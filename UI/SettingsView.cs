@@ -262,6 +262,8 @@ internal class SettingsView : BSMLAutomaticViewController
 
     #endregion
 
+    private string VersionText => $"v{Plugin.Version.ToString()}";
+
     [UIAction("FormatDuration")]
     private string FormatDuration(float value)
     {

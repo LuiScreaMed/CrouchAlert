@@ -95,5 +95,13 @@
                 text-key="CROUCH_ALERT_ALERT_SOUND_VOLUME"
                 hover-hint-key="CROUCH_ALERT_ALERT_SOUND_VOLUME_HINT"
         />
+        <horizontal pad-top="2">
+            <text
+                    id="versionText"
+                    text="~VersionText"
+                    font-size="3.5"
+                    align="Center"
+            />
+        </horizontal>
     </vertical>
 </bg>
