@@ -19,6 +19,8 @@ internal static class BeatTimeUtils
     {
         if (bpmChanges == null)
             throw new ArgumentNullException(nameof(bpmChanges));
+        if (bpmChanges.Length == 0)
+            throw new ArgumentException("Value cannot be an empty collection.", nameof(bpmChanges));
 
         int index = 0;
         float bpm = bpmChanges[index].BPM;
@@ -52,13 +54,15 @@ internal static class BeatTimeUtils
     {
         if (bpmChanges == null)
             throw new ArgumentNullException(nameof(bpmChanges));
+        if (bpmChanges.Length == 0)
+            throw new ArgumentException("Value cannot be an empty collection.", nameof(bpmChanges));
 
-        int timeBPMIndex = 0;
+        int index = 0;
         float bpm = 0f;
         foreach (BPMChangeItem item in bpmChanges)
         {
             if (time < item.Time) break;
-            timeBPMIndex++;
+            index++;
             bpm = item.BPM;
         }
 
@@ -66,14 +70,14 @@ internal static class BeatTimeUtils
         float duration = BeatsToDuration(bpm, remainingBeats);
         while (true)
         {
-            if (timeBPMIndex > 0 && (time - duration) < bpmChanges[timeBPMIndex - 1].Time)
+            if (index > 0 && (time - duration) < bpmChanges[index - 1].Time)
             {
-                timeBPMIndex--;
-                float durationToPrevBPMChange = time - bpmChanges[timeBPMIndex].Time;
+                index--;
+                float durationToPrevBPMChange = time - bpmChanges[index].Time;
                 float durationInBeats = DurationToBeats(bpm, durationToPrevBPMChange);
                 remainingBeats -= durationInBeats;
-                time = bpmChanges[timeBPMIndex].Time;
-                bpm = bpmChanges[timeBPMIndex].BPM;
+                time = bpmChanges[index].Time;
+                bpm = bpmChanges[index].BPM;
                 duration = BeatsToDuration(bpm, remainingBeats);
             }
             else
@@ -84,5 +88,47 @@ internal static class BeatTimeUtils
         }
 
         return time;
+    }
+
+    public static float GetBPM(float time, BPMChangeItem[] bpmChanges)
+    {
+        if (bpmChanges == null)
+            throw new ArgumentNullException(nameof(bpmChanges));
+        if (bpmChanges.Length == 0)
+            throw new ArgumentException("Value cannot be an empty collection.", nameof(bpmChanges));
+
+        float bpm = bpmChanges[0].BPM;
+        for (int i = 0; i < bpmChanges.Length; i++)
+        {
+            if (bpmChanges[i].Time < time) continue;
+            bpm = bpmChanges[i].BPM;
+            break;
+        }
+
+        return bpm;
+    }
+
+    public static float GetBeatsFromStart(float time, BPMChangeItem[] bpmChanges)
+    {
+        if (bpmChanges == null)
+            throw new ArgumentNullException(nameof(bpmChanges));
+        if (bpmChanges.Length == 0)
+            throw new ArgumentException("Value cannot be an empty collection.", nameof(bpmChanges));
+
+        float beats = 0;
+
+        for (int i = 0; i < bpmChanges.Length - 1; i++)
+        {
+            if (time > bpmChanges[i + 1].Time)
+            {
+                beats += DurationToBeats(bpmChanges[i].BPM, bpmChanges[i + 1].Time - bpmChanges[i].Time);
+                continue;
+            }
+
+            beats += DurationToBeats(bpmChanges[i].BPM, time - bpmChanges[i].Time);
+            break;
+        }
+
+        return beats;
     }
 }

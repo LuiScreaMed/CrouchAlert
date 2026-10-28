@@ -12,9 +12,6 @@ using CustomJSONData.CustomBeatmap;
 using HMUI;
 using UnityEngine;
 using Zenject;
-using Quaternion = UnityEngine.Quaternion;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
 
 namespace CrouchAlert;
 
@@ -71,9 +68,9 @@ internal class CrouchAlertController : MonoBehaviour
 
     private void BuildBPMChanges()
     {
+        // Turn beat map bpm change events into a bpmChanges array
         Plugin.Log.Debug($"Building BPM Changes");
-        CustomBeatmapData customBeatmapData = (_readonlyBeatmapData as CustomBeatmapData)!;
-        if (customBeatmapData.version.IsVersion2() && customBeatmapData.customData.ContainsKey("_BPMChanges"))
+        if (_readonlyBeatmapData is CustomBeatmapData customBeatmapData && customBeatmapData.version.IsVersion2() && customBeatmapData.customData.ContainsKey("_BPMChanges"))
         {
             CustomData customData = customBeatmapData.customData;
             List<object>? bpmChanges = customData.Get<List<object>>("_BPMChanges");
@@ -111,26 +108,60 @@ internal class CrouchAlertController : MonoBehaviour
     private void BuildCrouches()
     {
         Plugin.Log.Info("Start Building Crouches");
-        float startTime = Time.time;
+        float startTime = Time.realtimeSinceStartup;
         BPMChangeItem[] bpmChanges = _bpmChanges!;
-        // Group up walls
+        int obstacleCount = 0;
+
+        // Pre-process:
+        // Trim obstacles, split long crouch obstacles into smaller obstacles
+        Plugin.Log.Debug("Pre-processing obstacles");
+        List<ObstacleData> processedObstacles = new();
+        foreach (ObstacleData obstacle in _readonlyBeatmapData.allBeatmapDataItems.OfType<ObstacleData>())
+        {
+            obstacleCount++;
+            ObstacleData? trimedObstacle = ObstacleUtils.Trim(obstacle);
+            if (trimedObstacle == null) continue;
+
+            if (obstacle.lineLayer != NoteLineLayer.Top)
+            {
+                processedObstacles.Add(obstacle);
+                continue;
+            }
+
+            if (BeatTimeUtils.BeatsBetween(obstacle.time, obstacle.time + obstacle.duration, bpmChanges) <=
+                _config.CrouchWallGroupingThreshold)
+            {
+                processedObstacles.Add(obstacle);
+                continue;
+            }
+
+            List<ObstacleData> splitObstacles =
+                ObstacleUtils.SplitObstacleByBeats(obstacle, _config.CrouchWallGroupingThreshold, bpmChanges);
+            foreach (ObstacleData splitObstacle in splitObstacles)
+            {
+                processedObstacles.Add(splitObstacle);
+            }
+        }
+
+        processedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
+
+        // Grouping crouch obstacles:
+        // When obstacles' lines are overlapping or next to each other (not including identical lines obstacles)[1]
+        // and with spawn time gap under the value of CrouchWallGroupingThreshold, group(merge) them together
+        // [1]: To avoid grouping a very long crouch obstacle into a massive obstacle 
         Plugin.Log.Debug("Grouping crouch obstacles");
         List<ObstacleData> groupedObstacles = new();
         ObstacleData? groupedCrouchObstacle = null;
         float lastCrouchObstacleTime = 0f;
         float groupingThreshold = _config.CrouchWallGroupingThreshold + 0.016f; // Add 1/64 beats margin
-        int obstacleCount = 0;
-        foreach (ObstacleData obstacle in _readonlyBeatmapData.allBeatmapDataItems.OfType<ObstacleData>())
+        foreach (ObstacleData obstacle in processedObstacles)
         {
-            obstacleCount++;
             if (obstacle.lineLayer != NoteLineLayer.Top)
             {
                 groupedObstacles.Add(obstacle);
                 continue;
             }
 
-            // Check if the obstacles' spawn time gap is under the threshold,
-            // and if the obstacle overlapping or next to grouped obstacle
             if (
                 groupedCrouchObstacle == null ||
                 BeatTimeUtils.BeatsBetween(lastCrouchObstacleTime, obstacle.time, bpmChanges) > groupingThreshold ||
@@ -144,10 +175,13 @@ internal class CrouchAlertController : MonoBehaviour
 
                 groupedCrouchObstacle = obstacle;
                 lastCrouchObstacleTime = obstacle.time;
+                
+                // Plugin.Log.Debug(
+                //     $"??? Not Grouped\nIn coming crouch wall: time={obstacle.time}, endTime={obstacle.time + obstacle.duration}, lineIndex={obstacle.lineIndex}, width={obstacle.width}\nGrouped crouch wall: {groupedCrouchObstacle.time}, endTime={groupedCrouchObstacle.time + groupedCrouchObstacle.duration}, lineIndex={groupedCrouchObstacle.lineIndex}, width={groupedCrouchObstacle.width}");
                 continue;
             }
 
-            // Merge to a bigger crouch obstacle
+            // Merge into a bigger crouch obstacle
             int lineIndex = Math.Min(groupedCrouchObstacle.lineIndex, obstacle.lineIndex);
             float duration = Math.Max(
                 groupedCrouchObstacle.time + groupedCrouchObstacle.duration,
@@ -169,10 +203,15 @@ internal class CrouchAlertController : MonoBehaviour
                 groupedCrouchObstacle.height
             );
             lastCrouchObstacleTime = obstacle.time;
+            
+            // Plugin.Log.Debug(
+            //     $"!!! Grouped!\nIn coming crouch wall: time={obstacle.time}, endTime={obstacle.time + obstacle.duration}, lineIndex={obstacle.lineIndex}, width={obstacle.width}\nGrouped crouch wall: {groupedCrouchObstacle.time}, endTime={groupedCrouchObstacle.time + groupedCrouchObstacle.duration}, lineIndex={groupedCrouchObstacle.lineIndex}, width={groupedCrouchObstacle.width}");
         }
-
+        groupedObstacles.Add(groupedCrouchObstacle!);
+        
         groupedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
-
+        
+        // Calculating Crouches:
         Plugin.Log.Debug("Calculating crouches");
         HashSet<CrouchItem> crouches = new();
         Walls currentWalls = new Walls();
@@ -191,7 +230,7 @@ internal class CrouchAlertController : MonoBehaviour
         }
 
         Plugin.Log.Info(
-            $"Calculate done (in {Time.time - startTime} s). {obstacleCount} obstacle(s) in total. {(crouches.Count)} crouch(es) needed");
+            $"Calculate done (in {Convert.ToInt32((Time.realtimeSinceStartup - startTime) * 1000)} ms). {obstacleCount} obstacle(s) in total. {(crouches.Count)} crouch(es) needed");
         if (crouches.Count <= 0) return;
         crouches.Add(new CrouchItem(_audioTimeSyncController.songLength + 100f, 0f));
         if (_config.AlertFirstOnly)
