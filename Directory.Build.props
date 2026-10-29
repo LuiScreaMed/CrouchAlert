@@ -7,7 +7,7 @@
     <PluginId>CrouchAlert</PluginId>
     <PluginName>CrouchAlert</PluginName>
     <Authors>LuiScreaMed</Authors>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <GameVersion>1.40.8</GameVersion>
     <Description>A Beat Saber mod to alert incoming crouching walls.</Description>
     <!--<PluginIcon></PluginIcon>-->
