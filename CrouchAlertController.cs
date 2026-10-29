@@ -347,7 +347,11 @@ internal class CrouchAlertController : MonoBehaviour
             // Plugin.Log.Debug(
             //     $"!!! Grouped!\nIn coming crouch wall: time={obstacle.time}, endTime={obstacle.time + obstacle.duration}, lineIndex={obstacle.lineIndex}, width={obstacle.width}\nGrouped crouch wall: {groupedCrouchObstacle.time}, endTime={groupedCrouchObstacle.time + groupedCrouchObstacle.duration}, lineIndex={groupedCrouchObstacle.lineIndex}, width={groupedCrouchObstacle.width}");
         }
-        groupedObstacles.Add(groupedCrouchObstacle!);
+
+        if (groupedCrouchObstacle != null)
+        {
+            groupedObstacles.Add(groupedCrouchObstacle);
+        }
         groupedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
 
         // 2. Group up repeat obstacles (merge the split obstacles in pre-process)
@@ -392,7 +396,11 @@ internal class CrouchAlertController : MonoBehaviour
             );
             lastCrouchObstacleTime = obstacle.time;
         }
-        groupedObstacles.Add(groupedCrouchObstacle!);
+
+        if (groupedCrouchObstacle != null)
+        {
+            groupedObstacles.Add(groupedCrouchObstacle);
+        }
         groupedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
         return groupedObstacles;
     }
