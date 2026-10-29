@@ -30,7 +30,7 @@ public class PluginConfig
     /// <summary>
     /// Alert crouches before duration(in beats)
     /// </summary>
-    public virtual float AlertDurationInBeats { get; set; } = 3f;
+    public virtual float AlertDurationInBeats { get; set; } = 4f;
 
     /// <summary>
     /// Alert crouches before duration(in seconds)
@@ -55,7 +55,7 @@ public class PluginConfig
     /// <summary>
     /// The volume of the alert sound
     /// </summary>
-    public virtual float AlertSoundVolume { get; set; } = 0.5f;
+    public virtual float AlertSoundVolume { get; set; } = 1f;
 
     public virtual void Changed()
     {
