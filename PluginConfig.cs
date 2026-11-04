@@ -1,5 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using CrouchAlert.Data.AlertUI;
 using IPA.Config.Stores;
+using IPA.Config.Stores.Attributes;
+using IPA.Config.Stores.Converters;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 
@@ -56,6 +59,17 @@ public class PluginConfig
     /// The volume of the alert sound
     /// </summary>
     public virtual float AlertSoundVolume { get; set; } = 1f;
+
+    /// <summary>
+    /// The placement of alert ui. Floor: Place on the ground with large size, facing up; Above: Place above, facing player; Custom: custom placement. 
+    /// </summary>
+    [UseConverter(typeof(CaseInsensitiveEnumConverter<AlertUIPlacement>))]
+    public virtual AlertUIPlacement AlertUIPlacement { get; set; } = AlertUIPlacement.Floor;
+
+    /// <summary>
+    /// Custom alert ui transform
+    /// </summary>
+    public virtual AlertUITransform CustomAlertUITransform { get; set; } = new AlertUITransform();
 
     public virtual void Changed()
     {

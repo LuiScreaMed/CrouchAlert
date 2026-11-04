@@ -18,6 +18,7 @@ internal class Plugin
     private readonly Harmony _harmony = new("com.luiscreamed.crouch-alert");
 
     internal static Version Version { get; private set; } = null!;
+    internal static string SourceURL { get; private set; } = "";
 
     // Methods with [Init] are called when the plugin is first loaded by IPA.
     // All the parameters are provided by IPA and are optional.
@@ -26,6 +27,7 @@ internal class Plugin
     public Plugin(IpaLogger ipaLogger, IpaConfig ipaConfig, Zenjector zenjector, PluginMetadata pluginMetadata)
     {
         Version = pluginMetadata.HVersion;
+        SourceURL = pluginMetadata.PluginSourceLink != null ? pluginMetadata.PluginSourceLink.ToString() : "";
         Log = ipaLogger;
         zenjector.UseLogger(Log);
 

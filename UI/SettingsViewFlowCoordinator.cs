@@ -21,8 +21,9 @@ internal class SettingsViewFlowCoordinator : FlowCoordinator, IDisposable
         MenuButtons.Instance.RegisterButton(_menuButton);
     }
 
-    protected override void BackButtonWasPressed(ViewController topViewController)
+    protected override void BackButtonWasPressed(ViewController _)
     {
+        _settingsView.OnExit();
         BeatSaberUI.MainFlowCoordinator.DismissFlowCoordinator(this);
     }
 
@@ -39,5 +40,10 @@ internal class SettingsViewFlowCoordinator : FlowCoordinator, IDisposable
             showBackButton = true;
             ProvideInitialViewControllers(_settingsView);
         }
+    }
+
+    protected override void InitialViewControllerWasPresented()
+    {
+        _settingsView.OnEnter();
     }
 }

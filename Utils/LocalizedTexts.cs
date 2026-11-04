@@ -31,6 +31,18 @@ internal static class LocalizedTexts
             string.Format(Get("CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD_OPTION_N_BEATS"), n);
     }
 
+    public static class AlertUIPlacement
+    {
+        public static string Floor =>
+            Get("CROUCH_ALERT_ALERT_UI_PLACEMENT_OPTION_FLOOR");
+
+        public static string Above =>
+            Get("CROUCH_ALERT_ALERT_UI_PLACEMENT_OPTION_ABOVE");
+
+        public static string Custom =>
+            Get("CROUCH_ALERT_ALERT_UI_PLACEMENT_OPTION_CUSTOM");
+    }
+
     public static string AudioClipNone => Get("CROUCH_ALERT_AUDIO_CLIP_NONE");
 
     public static string Get(string key) => BGLib.Polyglot.Localization.Get(key);

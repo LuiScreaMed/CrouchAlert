@@ -7,7 +7,7 @@ namespace CrouchAlert.UI;
 [ViewDefinition("CrouchAlert.UI.alert.bsml")]
 internal class AlertView : BSMLAutomaticViewController
 {
-    private string _countDownText = "";
+    private string _countDownText = "0.00s";
 
     public string CountDownText
     {
@@ -18,4 +18,14 @@ internal class AlertView : BSMLAutomaticViewController
             NotifyPropertyChanged();
         }
     }
+
+    private bool _isInSettings = false;
+
+    public void InSettings()
+    {
+        _isInSettings = true;
+        NotifyPropertyChanged(nameof(BackgroundAlpha));
+    }
+    
+    private float BackgroundAlpha => _isInSettings ? 1f : 0f;
 }

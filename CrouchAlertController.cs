@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BeatSaberMarkupLanguage.FloatingScreen;
 using CrouchAlert.Data;
+using CrouchAlert.Data.AlertUI;
 using CrouchAlert.Data.Wall;
 using CrouchAlert.UI;
 using CrouchAlert.Utils;
@@ -433,8 +434,18 @@ internal class CrouchAlertController : MonoBehaviour
     private void SetupUI()
     {
         Plugin.Log.Debug("Creating UI");
-        _floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(200, 160), false,
-            new Vector3(0f, 4f, 6.5f), Quaternion.identity);
+        
+        AlertUITransform uiTransform = _config.AlertUIPlacement switch
+        {
+            AlertUIPlacement.Floor => AlertUIConstants.FloorTransform,
+            AlertUIPlacement.Above => AlertUIConstants.AboveTransform,
+            AlertUIPlacement.Custom => _config.CustomAlertUITransform,
+            _ => AlertUIConstants.FloorTransform
+        };
+        
+        _floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(200, 60), false,
+            uiTransform.Position, Quaternion.Euler(uiTransform.Rotation));
+        _floatingScreen.transform.localScale = AlertUIConstants.FloatingScreenScale * uiTransform.Scale;
     }
 
     private void SetupAudio()

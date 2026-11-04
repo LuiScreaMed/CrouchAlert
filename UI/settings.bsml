@@ -1,107 +1,216 @@
-<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-    xsi:noNamespaceSchemaLocation='https://monkeymanboy.github.io/BSML-Docs/BSMLSchema.xsd'>
-    <vertical vertical-fit="PreferredSize">
-        <toggle-setting
-                id="enableToggle"
-                value="EnableValue"
-                apply-on-change="true"
-                text-key="CROUCH_ALERT_ENABLE"
-                hover-hint-key="CROUCH_ALERT_ENABLE_HINT"
-        />
-        <toggle-setting 
-                id="alertFirstOnlyToggle"
-                value="AlertFirstOnlyValue"
-                apply-on-change="true"
-                text-key="CROUCH_ALERT_ALERT_FIRST_ONLY"
-                hover-hint-key="CROUCH_ALERT_ALERT_FIRST_ONLY_HINT"
-        />
-        <toggle-setting
-                id="strictModeToggle"
-                value="StrictModeValue"
-                apply-on-change="true"
-                text-key="CROUCH_ALERT_STRICT_MODE"
-                hover-hint-key="CROUCH_ALERT_STRICT_MODE_HINT"
-        />
-        <dropdown-list-setting
-                id="alertDurationUnitDropdown"
-                value="AlertDurationUnitValue"
-                apply-on-change="true"
-                options="AlertDurationUnitOptions"
-                text-key="CROUCH_ALERT_ALERT_DURATION_UNIT"
-                hover-hint-key="CROUCH_ALERT_ALERT_DURATION_UNIT_HINT"
+<vertical child-control-height="false" child-expand-height="false" xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns="$LOCAL_SCHEMA$"
+          xsi:noNamespaceSchemaLocation='https://monkeymanboy.github.io/BSML-Docs/BSMLSchema.xsd'>
+    <tab-selector tab-tag="settings-tab" select-cell="OnTabSelected"/>
+    <tab tags="settings-tab" tab-name-key="CROUCH_ALERT_TAB_GENERAL">
+        <vertical vertical-fit="PreferredSize" pivot-y="1" pad-top="2">
+            <toggle-setting
+                    id="enableToggle"
+                    value="EnableValue"
+                    apply-on-change="true"
+                    text-key="CROUCH_ALERT_ENABLE"
+                    hover-hint-key="CROUCH_ALERT_ENABLE_HINT"
             />
-        <slider-setting
-                id="alertDurationInBeatsSlider"
-                value="AlertDurationInBeatsValue"
-                apply-on-change="true"
-                min="1.0"
-                max="8.0"
-                increment="1.0"
-                show-buttons="true"
-                formatter="FormatBeats"
-                text-key="CROUCH_ALERT_ALERT_DURATION_IN_BEATS"
-                hover-hint-key="CROUCH_ALERT_ALERT_DURATION_IN_BEATS_HINT"
-        />
-        <slider-setting
-                id="alertDurationInSecondsSlider"
-                value="AlertDurationInSecondsValue"
-                apply-on-change="true"
-                min="0.5"
-                max="5.0"
-                increment="0.05"
-                show-buttons="true"
-                formatter="FormatDuration"
-                text-key="CROUCH_ALERT_ALERT_DURATION_IN_SECONDS"
-                hover-hint-key="CROUCH_ALERT_ALERT_DURATION_IN_SECONDS_HINT"
-        />
-        <dropdown-list-setting
-                id="crouchWallGroupingThresholdDropdown"
-                value="CrouchWallGroupingThresholdValue"
-                apply-on-change="true"
-                options="CrouchWallGroupingThresholdOptions"
-                text-key="CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD"
-                hover-hint-key="CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD_HINT"
-        />
-        <toggle-setting
-                id="enableAlertSoundToggle"
-                value="EnableAlertSoundValue"
-                apply-on-change="true"
-                text-key="CROUCH_ALERT_ENABLE_ALERT_SOUND"
-                hover-hint-key="CROUCH_ALERT_ENABLE_ALERT_SOUND_HINT"
-        />
-        <dropdown-list-setting
-                id="alertSoundAudioClipDropdown"
-                value="AlertSoundAudioClipValue"
-                apply-on-change="true"
-                options="AlertSoundAudioClipOptions"
-                text-key="CROUCH_ALERT_ALERT_SOUND_AUDIO_CLIP"
-                hover-hint-key="CROUCH_ALERT_ALERT_SOUND_AUDIO_CLIP_HINT"
-        />
-        <text
-                id="alertSoundAudioClipNotFoundText"
-                text-key="CROUCH_ALERT_ALERT_SOUND_AUDIO_CLIP_NOT_FOUND"
-                font-size="3.5"
-                color="red"
-                align="BaselineRight"
-        />
-        <slider-setting
-                id="alertSoundVolumeSlider"
-                value="AlertSoundVolumeValue"
-                apply-on-change="true"
-                min="0.0"
-                max="1.0"
-                increment="0.1"
-                show-buttons="true"
-                text-key="CROUCH_ALERT_ALERT_SOUND_VOLUME"
-                hover-hint-key="CROUCH_ALERT_ALERT_SOUND_VOLUME_HINT"
-        />
-        <horizontal pad-top="2">
+            <toggle-setting
+                    id="alertFirstOnlyToggle"
+                    value="AlertFirstOnlyValue"
+                    apply-on-change="true"
+                    text-key="CROUCH_ALERT_ALERT_FIRST_ONLY"
+                    hover-hint-key="CROUCH_ALERT_ALERT_FIRST_ONLY_HINT"
+            />
+            <toggle-setting
+                    id="strictModeToggle"
+                    value="StrictModeValue"
+                    apply-on-change="true"
+                    text-key="CROUCH_ALERT_STRICT_MODE"
+                    hover-hint-key="CROUCH_ALERT_STRICT_MODE_HINT"
+            />
+            <list-setting
+                    id="alertDurationUnitListSetting"
+                    value="AlertDurationUnitValue"
+                    apply-on-change="true"
+                    options="AlertDurationUnitOptions"
+                    text-key="CROUCH_ALERT_ALERT_DURATION_UNIT"
+                    hover-hint-key="CROUCH_ALERT_ALERT_DURATION_UNIT_HINT"
+            />
+            <slider-setting
+                    id="alertDurationInBeatsSlider"
+                    value="AlertDurationInBeatsValue"
+                    apply-on-change="true"
+                    min="1.0"
+                    max="8.0"
+                    increment="1.0"
+                    show-buttons="true"
+                    formatter="FormatBeats"
+                    text-key="CROUCH_ALERT_ALERT_DURATION_IN_BEATS"
+                    hover-hint-key="CROUCH_ALERT_ALERT_DURATION_IN_BEATS_HINT"
+            />
+            <slider-setting
+                    id="alertDurationInSecondsSlider"
+                    value="AlertDurationInSecondsValue"
+                    apply-on-change="true"
+                    min="0.5"
+                    max="5.0"
+                    increment="0.05"
+                    show-buttons="true"
+                    formatter="FormatDuration"
+                    text-key="CROUCH_ALERT_ALERT_DURATION_IN_SECONDS"
+                    hover-hint-key="CROUCH_ALERT_ALERT_DURATION_IN_SECONDS_HINT"
+            />
+            <dropdown-list-setting
+                    id="crouchWallGroupingThresholdDropdown"
+                    value="CrouchWallGroupingThresholdValue"
+                    apply-on-change="true"
+                    options="CrouchWallGroupingThresholdOptions"
+                    text-key="CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD"
+                    hover-hint-key="CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD_HINT"
+            />
+        </vertical>
+    </tab>
+    <tab tags="settings-tab" tab-name-key="CROUCH_ALERT_TAB_AUDIO">
+        <vertical vertical-fit="PreferredSize" pivot-y="1" pad-top="2">
+            <toggle-setting
+                    id="enableAlertSoundToggle"
+                    value="EnableAlertSoundValue"
+                    apply-on-change="true"
+                    text-key="CROUCH_ALERT_ENABLE_ALERT_SOUND"
+                    hover-hint-key="CROUCH_ALERT_ENABLE_ALERT_SOUND_HINT"
+            />
+            <dropdown-list-setting
+                    id="alertSoundAudioClipDropdown"
+                    value="AlertSoundAudioClipValue"
+                    apply-on-change="true"
+                    options="AlertSoundAudioClipOptions"
+                    text-key="CROUCH_ALERT_ALERT_SOUND_AUDIO_CLIP"
+                    hover-hint-key="CROUCH_ALERT_ALERT_SOUND_AUDIO_CLIP_HINT"
+            />
             <text
-                    id="versionText"
-                    text="~VersionText"
+                    id="alertSoundAudioClipNotFoundText"
+                    text-key="CROUCH_ALERT_ALERT_SOUND_AUDIO_CLIP_NOT_FOUND"
                     font-size="3.5"
-                    align="Center"
+                    color="red"
+                    align="BaselineRight"
             />
-        </horizontal>
-    </vertical>
-</bg>
+            <slider-setting
+                    id="alertSoundVolumeSlider"
+                    value="AlertSoundVolumeValue"
+                    apply-on-change="true"
+                    min="0.0"
+                    max="1.0"
+                    increment="0.1"
+                    show-buttons="true"
+                    text-key="CROUCH_ALERT_ALERT_SOUND_VOLUME"
+                    hover-hint-key="CROUCH_ALERT_ALERT_SOUND_VOLUME_HINT"
+            />
+            <horizontal child-align="UpperRight" id="previewAudioWrapper">
+                <vertical flexible-width="1000"/>
+                <button text-key="CROUCH_ALERT_AUDIO_PREVIEW" on-click="PreviewAudio"/>
+            </horizontal>
+        </vertical>
+    </tab>
+    <tab tags="settings-tab" tab-name-key="CROUCH_ALERT_TAB_UI">
+        <vertical vertical-fit="PreferredSize" pivot-y="1" pad-top="2">
+            <vertical pad-left="4" pad-right="4">
+                <dropdown-list-setting
+                        id="alertUIPlacementDropdown"
+                        value="AlertUIPlacementValue"
+                        apply-on-change="true"
+                        options="AlertUIPlacementOptions"
+                        text-key="CROUCH_ALERT_ALERT_UI_PLACEMENT"
+                        hover-hint-key="CROUCH_ALERT_ALERT_UI_PLACEMENT_HINT"
+                />
+            </vertical>
+            <vertical background="round-rect-panel" pad-left="4" pad-right="4" pad-top="2" pad-bottom="2" scale="0.9"
+                      pivot-y="1">
+                <text text-key="CROUCH_ALERT_ALERT_UI_CUSTOM_PLACEMENT_TRANSFORM_TITLE" italics="true" align="Center"/>
+                <vertical spacing="-1">
+                    <slider-setting
+                            id="alertUICustomPlacementPositionXSlider"
+                            value="AlertUICustomPlacementPositionXValue"
+                            apply-on-change="true"
+                            min="-10.0"
+                            max="10.0"
+                            increment="0.01"
+                            show-buttons="true"
+                            text-key="CROUCH_ALERT_ALERT_UI_PLACEMENT_CUSTOM_POSITION_X"
+                    />
+                    <slider-setting
+                            id="alertUICustomPlacementPositionYSlider"
+                            value="AlertUICustomPlacementPositionYValue"
+                            apply-on-change="true"
+                            min="-10.0"
+                            max="10.0"
+                            increment="0.01"
+                            show-buttons="true"
+                            text-key="CROUCH_ALERT_ALERT_UI_PLACEMENT_CUSTOM_POSITION_Y"
+                    />
+                    <slider-setting
+                            id="alertUICustomPlacementPositionZSlider"
+                            value="AlertUICustomPlacementPositionZValue"
+                            apply-on-change="true"
+                            min="-10.0"
+                            max="10.0"
+                            increment="0.01"
+                            show-buttons="true"
+                            text-key="CROUCH_ALERT_ALERT_UI_PLACEMENT_CUSTOM_POSITION_Z"
+                    />
+                </vertical>
+                <horizontal pref-height="2"/>
+                <vertical spacing="-1">
+                    <slider-setting
+                            id="alertUICustomPlacementRotationXSlider"
+                            value="AlertUICustomPlacementRotationXValue"
+                            apply-on-change="true"
+                            min="-180.0"
+                            max="180.0"
+                            increment="0.5"
+                            show-buttons="true"
+                            text-key="CROUCH_ALERT_ALERT_UI_PLACEMENT_CUSTOM_ROTATION_X"
+                    />
+                    <slider-setting
+                            id="alertUICustomPlacementRotationYSlider"
+                            value="AlertUICustomPlacementRotationYValue"
+                            apply-on-change="true"
+                            min="-180.0"
+                            max="180.0"
+                            increment="0.5"
+                            show-buttons="true"
+                            text-key="CROUCH_ALERT_ALERT_UI_PLACEMENT_CUSTOM_ROTATION_Y"
+                    />
+                    <slider-setting
+                            id="alertUICustomPlacementRotationZSlider"
+                            value="AlertUICustomPlacementRotationZValue"
+                            apply-on-change="true"
+                            min="-180.0"
+                            max="180.0"
+                            increment="0.5"
+                            show-buttons="true"
+                            text-key="CROUCH_ALERT_ALERT_UI_PLACEMENT_CUSTOM_ROTATION_Z"
+                    />
+                </vertical>
+                <horizontal pref-height="2"/>
+                <slider-setting
+                        id="alertUICustomPlacementScaleSlider"
+                        value="AlertUICustomPlacementScaleValue"
+                        apply-on-change="true"
+                        min="0.1"
+                        max="10.0"
+                        increment="0.01"
+                        show-buttons="true"
+                        text-key="CROUCH_ALERT_ALERT_UI_PLACEMENT_CUSTOM_SCALE"
+                />
+            </vertical>
+        </vertical>
+    </tab>
+    <tab tags="settings-tab" tab-name-key="CROUCH_ALERT_TAB_ABOUT">
+        <vertical vertical-fit="PreferredSize" pivot-y="1" pad-top="10">
+            <text text-key="CROUCH_ALERT_TITLE_ABOUT" font-size="8"/>
+            <horizontal child-align="UpperCenter" horizontal-fit="PreferredSize">
+                <text text="~VersionText" font-size="4"/>
+                <horizontal pref-width="3">
+                </horizontal>
+                <clickable-text color="cyan" text="Github" on-click="OpenGithubPage" font-size="4"/>
+            </horizontal>
+        </vertical>
+    </tab>
+</vertical>
