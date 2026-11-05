@@ -12,8 +12,8 @@ internal static class AlertUIConstants
         );
 
     public static readonly AlertUITransform FloorTransform =
-        new AlertUITransform(
-            new Vector3(0f, 0.01f, 1.5f),
+        new(
+            new Vector3(0f, 0.01f, 3.0f),
             new Vector3(90f, 0f, 0f),
             3f
         );
