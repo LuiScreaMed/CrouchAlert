@@ -456,6 +456,9 @@ internal class CrouchAlertController : MonoBehaviour
         _audioSource.volume = _config.AlertSoundVolume;
     }
 
+    private Coroutine? _alertCoroutine = null;
+    private Coroutine? _updateAlertProcessCoroutine = null;
+
     private void LateUpdate()
     {
         if (!_ready || _nextCrouchIndex < 0) return;
@@ -475,7 +478,10 @@ internal class CrouchAlertController : MonoBehaviour
         if (_nextCrouchIndex > oldNextCrouchIndex &&
             _audioTimeSyncController.state == AudioTimeSyncController.State.Playing)
         {
-            StartCoroutine(Alert(_crouches![oldNextCrouchIndex].Duration / _audioTimeSyncController.timeScale));
+            if (_updateAlertProcessCoroutine != null) StopCoroutine(_updateAlertProcessCoroutine);
+            if (_alertCoroutine != null) StopCoroutine(_alertCoroutine);
+            _alertCoroutine =
+                StartCoroutine(Alert(_crouches![oldNextCrouchIndex].Duration / _audioTimeSyncController.timeScale));
         }
     }
 
@@ -491,13 +497,12 @@ internal class CrouchAlertController : MonoBehaviour
             _audioSource.PlayOneShot(_alertSoundAudioClip);
         }
 
-        IEnumerator updateCountDownText = UpdateCountDownText(duration);
-        StartCoroutine(updateCountDownText);
+        _updateAlertProcessCoroutine = StartCoroutine(UpdateCountDownText(duration));
 
         yield return new WaitForSeconds(duration);
 
         _floatingScreen.SetRootViewController(null, ViewController.AnimationType.None);
-        StopCoroutine(updateCountDownText);
+        StopCoroutine(_updateAlertProcessCoroutine);
         _alertView.CountDownText = "";
         _alerting = false;
     }
