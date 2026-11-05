@@ -322,7 +322,7 @@ internal class SettingsView : BSMLAutomaticViewController
             UpdateUITabUI();
         }
     }
-    
+
     [UIComponent("alertUITransparencySlider")]
     private readonly SliderSetting? _alertUITransparencySlider = null;
 
@@ -333,6 +333,21 @@ internal class SettingsView : BSMLAutomaticViewController
         {
             _config.AlertUITransparency = value;
             _alertView?.Alpha = 1 - value;
+        }
+    }
+
+    [UIComponent("alertUIAllowDraggingToggle")]
+    private readonly ToggleSetting? _alertUIAllowDraggingToggle = null;
+
+    private bool _alertUIAllowDragging = true;
+
+    private bool AlertUIAllowDraggingValue
+    {
+        get => _alertUIAllowDragging;
+        set
+        {
+            _alertUIAllowDragging = value;
+            _floatingScreen?.ShowHandle = value;
         }
     }
 
@@ -560,6 +575,7 @@ internal class SettingsView : BSMLAutomaticViewController
         _alertUIPlacementDropdown?.Interactable = EnableValue && !_isAlertUIGrabbed;
         _alertUIPlacementDropdown?.Value = AlertUIPlacementValue;
         _alertUITransparencySlider?.Interactable = EnableValue && !_isAlertUIGrabbed;
+        _alertUIAllowDraggingToggle?.Interactable = EnableValue && !_isAlertUIGrabbed;
         bool interactive = EnableValue && _config.AlertUIPlacement == AlertUIPlacement.Custom && !_isAlertUIGrabbed;
         _alertUICustomPlacementPositionXSlider?.Interactable = interactive;
         _alertUICustomPlacementPositionXSlider?.Value = AlertUICustomPlacementPositionXValue;

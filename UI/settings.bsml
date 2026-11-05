@@ -141,7 +141,18 @@
             </vertical>
             <vertical background="round-rect-panel" pad-left="4" pad-right="4" pad-top="2" pad-bottom="2" scale="0.8"
                       pivot-y="1">
-                <text text-key="CROUCH_ALERT_ALERT_UI_CUSTOM_PLACEMENT_TRANSFORM_TITLE" italics="true" align="Center"/>
+                <horizontal>
+                    <text text-key="CROUCH_ALERT_ALERT_UI_CUSTOM_PLACEMENT_TRANSFORM_TITLE" italics="true" align="CaplineLeft"/>
+                    <horizontal flexible-width="100" />
+                    <text text-key="CROUCH_ALERT_ALERT_UI_CUSTOM_PLACEMENT_TRANSFORM_ALLOW_DRAGGING" italics="true" align="Capline"/>
+                    <toggle-setting
+                            text=""
+                            id="alertUIAllowDraggingToggle"
+                            value="AlertUIAllowDraggingValue"
+                            apply-on-change="true"
+                            pref-width="21"
+                    />
+                </horizontal>
                 <vertical spacing="-1">
                     <slider-setting
                             id="alertUICustomPlacementPositionXSlider"
