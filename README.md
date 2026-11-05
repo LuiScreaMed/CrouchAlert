@@ -25,15 +25,19 @@ Download the zip file from [Release Page](https://github.com/LuiScreaMed/CrouchA
 
 - **Alert Duration (In beats/In seconds)**
 
-    Alert crouches ahead configured beats / seconds.
+    Alert crouches ahead of configured beats / seconds.
 
 - **Strict Mode**
 
     When enabled, only consider crouches with full lines of walls.
 
-- **Alert Sound**
+- **Customizable Alert Sound**
 
-    Play a configured sound when alert.
+    Play a customized sound when alert.
+
+- **Customizable Alert UI**
+
+    Customize alert UI's position, scale, countdown style and transparency
 
 Other basic options can be found in in-game settings page (from the left side of the main menu).
 
