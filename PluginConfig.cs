@@ -33,7 +33,7 @@ public class PluginConfig
     /// <summary>
     /// Alert crouches before duration(in beats)
     /// </summary>
-    public virtual float AlertDurationInBeats { get; set; } = 4f;
+    public virtual float AlertDurationInBeats { get; set; } = 3f;
 
     /// <summary>
     /// Alert crouches before duration(in seconds)
