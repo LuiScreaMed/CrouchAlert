@@ -111,6 +111,14 @@
     <tab tags="settings-tab" tab-name-key="CROUCH_ALERT_TAB_UI">
         <vertical vertical-fit="PreferredSize" pivot-y="1" pad-top="2">
             <vertical pad-left="4" pad-right="4">
+                <list-setting
+                        id="alertUICountdownDisplayTypeListSetting"
+                        value="AlertUICountdownDisplayTypeValue"
+                        apply-on-change="true"
+                        options="AlertUICountdownDisplayTypeOptions"
+                        text-key="CROUCH_ALERT_ALERT_UI_COUNTDOWN_DISPLAY_TYPE"
+                        hover-hint-key="CROUCH_ALERT_ALERT_UI_COUNTDOWN_DISPLAY_TYPE_HINT"
+                />
                 <dropdown-list-setting
                         id="alertUIPlacementDropdown"
                         value="AlertUIPlacementValue"
@@ -209,7 +217,7 @@
                 <text text="~VersionText" font-size="4"/>
                 <horizontal pref-width="3">
                 </horizontal>
-                <clickable-text color="cyan" text="Github" on-click="OpenGithubPage" font-size="4"/>
+                <clickable-text default-color="cyan" text="Github" on-click="OpenGithubPage" font-size="4"/>
             </horizontal>
         </vertical>
     </tab>

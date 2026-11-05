@@ -31,16 +31,28 @@ internal static class LocalizedTexts
             string.Format(Get("CROUCH_ALERT_CROUCH_WALL_GROUPING_THRESHOLD_OPTION_N_BEATS"), n);
     }
 
-    public static class AlertUIPlacement
+    public static class AlertUI
     {
-        public static string Floor =>
-            Get("CROUCH_ALERT_ALERT_UI_PLACEMENT_OPTION_FLOOR");
+        public static class Placement
+        {
+            public static string Floor =>
+                Get("CROUCH_ALERT_ALERT_UI_PLACEMENT_OPTION_FLOOR");
 
-        public static string Above =>
-            Get("CROUCH_ALERT_ALERT_UI_PLACEMENT_OPTION_ABOVE");
+            public static string Above =>
+                Get("CROUCH_ALERT_ALERT_UI_PLACEMENT_OPTION_ABOVE");
 
-        public static string Custom =>
-            Get("CROUCH_ALERT_ALERT_UI_PLACEMENT_OPTION_CUSTOM");
+            public static string Custom =>
+                Get("CROUCH_ALERT_ALERT_UI_PLACEMENT_OPTION_CUSTOM");
+        }
+
+        public static class CountdownDisplayType
+        {
+            public static string ProgressBar =>
+                Get("CROUCH_ALERT_ALERT_UI_COUNTDOWN_DISPLAY_TYPE_OPTION_PROGRESS_BAR");
+
+            public static string Timer =>
+                Get("CROUCH_ALERT_ALERT_UI_COUNTDOWN_DISPLAY_TYPE_OPTION_TIMER");
+        }
     }
 
     public static string AudioClipNone => Get("CROUCH_ALERT_AUDIO_CLIP_NONE");

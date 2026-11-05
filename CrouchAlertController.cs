@@ -39,7 +39,6 @@ internal class CrouchAlertController : MonoBehaviour
 
     private bool _requireNoodleExtensions = false;
     private bool _ready = false;
-    private bool _alerting = false;
 
     [Inject]
     public void Construct(PluginConfig config, IReadonlyBeatmapData beatmapData,
@@ -353,6 +352,7 @@ internal class CrouchAlertController : MonoBehaviour
         {
             groupedObstacles.Add(groupedCrouchObstacle);
         }
+
         groupedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
 
         // 2. Group up repeat obstacles (merge the split obstacles in pre-process)
@@ -365,7 +365,7 @@ internal class CrouchAlertController : MonoBehaviour
                 groupedObstacles.Add(obstacle);
                 continue;
             }
-            
+
             if (
                 groupedCrouchObstacle == null ||
                 BeatTimeUtils.BeatsBetween(lastCrouchObstacleTime, obstacle.time, _bpmChanges!) > groupingThreshold ||
@@ -376,10 +376,12 @@ internal class CrouchAlertController : MonoBehaviour
                 {
                     groupedObstacles.Add(groupedCrouchObstacle);
                 }
+
                 groupedCrouchObstacle = obstacle;
                 lastCrouchObstacleTime = obstacle.time;
                 continue;
             }
+
             float duration = Math.Max(
                 groupedCrouchObstacle.time + groupedCrouchObstacle.duration,
                 obstacle.time + obstacle.duration
@@ -402,6 +404,7 @@ internal class CrouchAlertController : MonoBehaviour
         {
             groupedObstacles.Add(groupedCrouchObstacle);
         }
+
         groupedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
         return groupedObstacles;
     }
@@ -434,7 +437,7 @@ internal class CrouchAlertController : MonoBehaviour
     private void SetupUI()
     {
         Plugin.Log.Debug("Creating UI");
-        
+
         AlertUITransform uiTransform = _config.AlertUIPlacement switch
         {
             AlertUIPlacement.Floor => AlertUIConstants.FloorTransform,
@@ -457,7 +460,6 @@ internal class CrouchAlertController : MonoBehaviour
     }
 
     private Coroutine? _alertCoroutine = null;
-    private Coroutine? _updateAlertProcessCoroutine = null;
 
     private void LateUpdate()
     {
@@ -478,7 +480,6 @@ internal class CrouchAlertController : MonoBehaviour
         if (_nextCrouchIndex > oldNextCrouchIndex &&
             _audioTimeSyncController.state == AudioTimeSyncController.State.Playing)
         {
-            if (_updateAlertProcessCoroutine != null) StopCoroutine(_updateAlertProcessCoroutine);
             if (_alertCoroutine != null) StopCoroutine(_alertCoroutine);
             _alertCoroutine =
                 StartCoroutine(Alert(_crouches![oldNextCrouchIndex].Duration / _audioTimeSyncController.timeScale));
@@ -487,9 +488,6 @@ internal class CrouchAlertController : MonoBehaviour
 
     private IEnumerator Alert(float duration)
     {
-        if (_alerting) yield break;
-        _alerting = true;
-
         _floatingScreen.SetRootViewController(_alertView, ViewController.AnimationType.None);
 
         if (_config.EnableAlertSound && _alertSoundAudioClip)
@@ -497,24 +495,27 @@ internal class CrouchAlertController : MonoBehaviour
             _audioSource.PlayOneShot(_alertSoundAudioClip);
         }
 
-        _updateAlertProcessCoroutine = StartCoroutine(UpdateCountDownText(duration));
+        yield return UpdateAlertCountdown(duration);
 
-        yield return new WaitForSeconds(duration);
+        _floatingScreen.SetRootViewController(null, ViewController.AnimationType.Out);
 
-        _floatingScreen.SetRootViewController(null, ViewController.AnimationType.None);
-        StopCoroutine(_updateAlertProcessCoroutine);
-        _alertView.CountDownText = "";
-        _alerting = false;
+        yield return new WaitForSecondsRealtime(.5f);
+
+        _alertView.UpdateProgress(9.99f, 0f);
     }
 
-    private IEnumerator UpdateCountDownText(float time)
+    private IEnumerator UpdateAlertCountdown(float time)
     {
         float startTime = Time.time;
-        while (true)
+        float timeLeft = Math.Max(0f, time - (Time.time - startTime));
+        while (timeLeft > 0)
         {
-            _alertView.CountDownText = Formatter.FormatFloatSecond(Math.Max(0f, time - (Time.time - startTime)));
-            yield return new WaitForSeconds(0.05f);
+            timeLeft = Math.Max(0f, time - (Time.time - startTime));
+            _alertView.UpdateProgress(timeLeft, 1 - (timeLeft / time));
+            yield return new WaitForSeconds(0.016f);
         }
+
+        _alertView.UpdateProgress(0, 1);
     }
 
     private void OnDestroy()

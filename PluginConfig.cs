@@ -67,6 +67,12 @@ public class PluginConfig
     public virtual AlertUIPlacement AlertUIPlacement { get; set; } = AlertUIPlacement.Floor;
 
     /// <summary>
+    /// How to display the countdown. Progress Bar: The UI background turns into progress bar, fills from left and right to the middle; Timer: Display a timer below the alert text.
+    /// </summary>
+    [UseConverter(typeof(CaseInsensitiveEnumConverter<AlertUICountdownDisplayType>))]
+    public virtual AlertUICountdownDisplayType AlertUICountdownDisplayType { get; set; } = AlertUICountdownDisplayType.ProgressBar;
+
+    /// <summary>
     /// Custom alert ui transform
     /// </summary>
     public virtual AlertUITransform CustomAlertUITransform { get; set; } = new AlertUITransform();

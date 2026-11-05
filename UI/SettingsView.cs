@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BeatSaberMarkupLanguage;
@@ -47,9 +48,15 @@ internal class SettingsView : BSMLAutomaticViewController
     // Alert UI
     private readonly Dictionary<AlertUIPlacement, string> _alertUIPlacementMap = new()
     {
-        { AlertUIPlacement.Floor, LocalizedTexts.AlertUIPlacement.Floor },
-        { AlertUIPlacement.Above, LocalizedTexts.AlertUIPlacement.Above },
-        { AlertUIPlacement.Custom, LocalizedTexts.AlertUIPlacement.Custom },
+        { AlertUIPlacement.Floor, LocalizedTexts.AlertUI.Placement.Floor },
+        { AlertUIPlacement.Above, LocalizedTexts.AlertUI.Placement.Above },
+        { AlertUIPlacement.Custom, LocalizedTexts.AlertUI.Placement.Custom },
+    };
+
+    private readonly Dictionary<AlertUICountdownDisplayType, string> _alertUICountdownDisplayTypeMap = new()
+    {
+        { AlertUICountdownDisplayType.ProgressBar, LocalizedTexts.AlertUI.CountdownDisplayType.ProgressBar },
+        { AlertUICountdownDisplayType.Timer, LocalizedTexts.AlertUI.CountdownDisplayType.Timer },
     };
 
     private bool _isInUITab = false;
@@ -238,8 +245,7 @@ internal class SettingsView : BSMLAutomaticViewController
         set => _config.AlertSoundVolume = value;
     }
 
-    [UIComponent("previewAudioWrapper")]
-    private readonly LayoutElement? _previewAudioWrapper = null;
+    [UIComponent("previewAudioWrapper")] private readonly LayoutElement? _previewAudioWrapper = null;
 
     [UIAction("PreviewAudio")]
     private void PreviewAudio()
@@ -270,6 +276,8 @@ internal class SettingsView : BSMLAutomaticViewController
 
     #region UI
 
+    private Coroutine? _countdownCoroutine = null;
+
     [UIAction("OnTabSelected")]
     private void OnTabSelected(SegmentedControl _, int tagIndex)
     {
@@ -282,6 +290,22 @@ internal class SettingsView : BSMLAutomaticViewController
         {
             _isInUITab = false;
             DestroyAlertUI();
+        }
+    }
+
+    [UIComponent("alertUICountdownDisplayTypeListSetting")]
+    private readonly ListSetting? _alertUICountdownDisplayTypeListSetting = null;
+
+    private List<string> AlertUICountdownDisplayTypeOptions => _alertUICountdownDisplayTypeMap.Values.ToList();
+
+    private string AlertUICountdownDisplayTypeValue
+    {
+        get => _alertUICountdownDisplayTypeMap[_config.AlertUICountdownDisplayType];
+        set
+        {
+            _config.AlertUICountdownDisplayType =
+                _alertUICountdownDisplayTypeMap.Keys.First(key => _alertUICountdownDisplayTypeMap[key] == value);
+            UpdateAlertUICountdownType();
         }
     }
 
@@ -432,16 +456,19 @@ internal class SettingsView : BSMLAutomaticViewController
         _floatingScreen.HandleGrabbed += OnAlertUIGrabbed;
         _floatingScreen.HandleReleased += OnAlertUIReleased;
         _floatingScreen.SetRootViewController(_alertView, AnimationType.None);
-        _alertView.InSettings();
+        _alertView.SetCountdownDisplayType(_config.AlertUICountdownDisplayType);
         UpdateAlertUITransform();
+        UpdateAlertUICountdownType();
     }
 
     private void DestroyAlertUI()
     {
+        if (_countdownCoroutine != null) StopCoroutine(_countdownCoroutine);
         if (_floatingScreen != null)
         {
             _floatingScreen.SetRootViewController(null, AnimationType.None);
             _floatingScreen.HandleGrabbed -= OnAlertUIGrabbed;
+            _floatingScreen.HandleReleased -= OnAlertUIReleased;
             DestroyImmediate(_floatingScreen);
             _floatingScreen = null;
         }
@@ -450,6 +477,29 @@ internal class SettingsView : BSMLAutomaticViewController
         {
             DestroyImmediate(_alertView);
             _alertView = null;
+        }
+    }
+
+    private void UpdateAlertUICountdownType()
+    {
+        _alertView?.SetCountdownDisplayType(_config.AlertUICountdownDisplayType);
+        if (_countdownCoroutine != null) StopCoroutine(_countdownCoroutine);
+        _countdownCoroutine = StartCoroutine(LoopCountdown());
+    }
+
+    private IEnumerator LoopCountdown()
+    {
+        float timeLeft = 2f;
+        while (true)
+        {
+            if (timeLeft == 0f) timeLeft = 2f;
+
+            timeLeft = Math.Max(0f, timeLeft - 0.016f);
+
+            _alertView?.UpdateProgress(timeLeft, 1 - (timeLeft / 2f));
+            _alertView?.BackgroundAlpha = (float)((Math.Sin(Time.time * 3) + 1) * .5);
+
+            yield return new WaitForSecondsRealtime(0.016f);
         }
     }
 
@@ -492,7 +542,7 @@ internal class SettingsView : BSMLAutomaticViewController
 
     private void UpdateUITabUI()
     {
-        // donno why NotifyPropertyChanged wont work
+        _alertUICountdownDisplayTypeListSetting?.Interactable = EnableValue && !_isAlertUIGrabbed;
         _alertUIPlacementDropdown?.Interactable = EnableValue && !_isAlertUIGrabbed;
         _alertUIPlacementDropdown?.Value = AlertUIPlacementValue;
         bool interactive = EnableValue && _config.AlertUIPlacement == AlertUIPlacement.Custom && !_isAlertUIGrabbed;
@@ -536,19 +586,6 @@ internal class SettingsView : BSMLAutomaticViewController
     private string FormatBeats(float value)
     {
         return Formatter.FormatBeats(value);
-    }
-
-    private void UpdateUIInteractable()
-    {
-        _alertFirstOnlyToggle?.Interactable = EnableValue;
-        _strictModeToggle?.Interactable = EnableValue;
-        _alertDurationUnitListSetting?.Interactable = EnableValue;
-        _alertDurationInBeatsSlider?.Interactable = EnableValue;
-        _alertDurationInSecondsSlider?.Interactable = EnableValue;
-        _crouchWallGroupingThresholdDropdown?.Interactable = EnableValue;
-        _alertSoundToggle?.Interactable = EnableValue;
-        _audioClipDropdown?.Interactable = EnableValue;
-        _volumeSlider?.Interactable = EnableValue;
     }
 
     private void UpdateAllUI()
