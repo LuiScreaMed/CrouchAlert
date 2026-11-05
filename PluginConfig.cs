@@ -71,6 +71,11 @@ public class PluginConfig
     /// </summary>
     [UseConverter(typeof(CaseInsensitiveEnumConverter<AlertUICountdownDisplayType>))]
     public virtual AlertUICountdownDisplayType AlertUICountdownDisplayType { get; set; } = AlertUICountdownDisplayType.ProgressBar;
+    
+    /// <summary>
+    /// The transparency of alert UI
+    /// </summary>
+    public virtual float AlertUITransparency { get; set; } = 0f;
 
     /// <summary>
     /// Custom alert ui transform

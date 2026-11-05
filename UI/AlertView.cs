@@ -1,5 +1,6 @@
 using System;
 using BeatSaberMarkupLanguage.Attributes;
+using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
 using CrouchAlert.Data.AlertUI;
 using CrouchAlert.Utils;
@@ -38,6 +39,9 @@ internal class AlertView : BSMLAutomaticViewController
         }
     }
 
+    private CanvasGroup? _canvasGroup = null;
+
+    [UIComponent("background")] private Backgroundable _background = null!;
     [UIComponent("progressBarLeft")] private Image _progressBarLeft = null!;
     [UIComponent("progressBarRight")] private Image _progressBarRight = null!;
 
@@ -51,6 +55,7 @@ internal class AlertView : BSMLAutomaticViewController
         );
         _progressBarLeft.sprite = sprite;
         _progressBarRight.sprite = sprite;
+        _canvasGroup = _background.gameObject.AddComponent<CanvasGroup>();
     }
 
     private float _backgroundAlpha = 0f;
@@ -62,6 +67,18 @@ internal class AlertView : BSMLAutomaticViewController
         {
             _backgroundAlpha = value;
             NotifyPropertyChanged();
+        }
+    }
+
+    private float _alpha = 1f;
+
+    public float Alpha
+    {
+        get => _alpha;
+        set
+        {
+            _alpha = value;
+            _canvasGroup?.alpha = _alpha;
         }
     }
 

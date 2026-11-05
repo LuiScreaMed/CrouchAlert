@@ -322,6 +322,19 @@ internal class SettingsView : BSMLAutomaticViewController
             UpdateUITabUI();
         }
     }
+    
+    [UIComponent("alertUITransparencySlider")]
+    private readonly SliderSetting? _alertUITransparencySlider = null;
+
+    private float AlertUITransparencyValue
+    {
+        get => _config.AlertUITransparency;
+        set
+        {
+            _config.AlertUITransparency = value;
+            _alertView?.Alpha = 1 - value;
+        }
+    }
 
     private List<string> AlertUIPlacementOptions => _alertUIPlacementMap.Values.ToList();
 
@@ -457,6 +470,7 @@ internal class SettingsView : BSMLAutomaticViewController
         _floatingScreen.HandleReleased += OnAlertUIReleased;
         _floatingScreen.SetRootViewController(_alertView, AnimationType.None);
         _alertView.SetCountdownDisplayType(_config.AlertUICountdownDisplayType);
+        _alertView.Alpha = 1 - _config.AlertUITransparency;
         UpdateAlertUITransform();
         UpdateAlertUICountdownType();
     }
@@ -545,6 +559,7 @@ internal class SettingsView : BSMLAutomaticViewController
         _alertUICountdownDisplayTypeListSetting?.Interactable = EnableValue && !_isAlertUIGrabbed;
         _alertUIPlacementDropdown?.Interactable = EnableValue && !_isAlertUIGrabbed;
         _alertUIPlacementDropdown?.Value = AlertUIPlacementValue;
+        _alertUITransparencySlider?.Interactable = EnableValue && !_isAlertUIGrabbed;
         bool interactive = EnableValue && _config.AlertUIPlacement == AlertUIPlacement.Custom && !_isAlertUIGrabbed;
         _alertUICustomPlacementPositionXSlider?.Interactable = interactive;
         _alertUICustomPlacementPositionXSlider?.Value = AlertUICustomPlacementPositionXValue;

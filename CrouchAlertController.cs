@@ -437,6 +437,7 @@ internal class CrouchAlertController : MonoBehaviour
     private void SetupUI()
     {
         Plugin.Log.Debug("Creating UI");
+        _alertView.Alpha = 1 - _config.AlertUITransparency;
 
         AlertUITransform uiTransform = _config.AlertUIPlacement switch
         {
