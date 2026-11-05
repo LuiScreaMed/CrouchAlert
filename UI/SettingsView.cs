@@ -426,7 +426,7 @@ internal class SettingsView : BSMLAutomaticViewController
     {
         DestroyAlertUI();
         _alertView = BeatSaberUI.CreateViewController<AlertView>();
-        _floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(200, 60), true,
+        _floatingScreen = FloatingScreen.CreateFloatingScreen(AlertUIConstants.FloatingScreenSize, true,
             new Vector3(0f, 0f, 0f), Quaternion.identity);
         _floatingScreen.HandleSide = FloatingScreen.Side.Full;
         _floatingScreen.HandleGrabbed += OnAlertUIGrabbed;

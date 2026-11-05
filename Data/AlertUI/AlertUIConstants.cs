@@ -19,4 +19,6 @@ internal static class AlertUIConstants
         );
 
     public static readonly Vector3 FloatingScreenScale = new Vector3(0.01f, 0.01f, 0.01f);
+    
+    public static readonly Vector2 FloatingScreenSize = new Vector2(150, 40); 
 }

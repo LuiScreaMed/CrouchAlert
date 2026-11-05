@@ -442,8 +442,8 @@ internal class CrouchAlertController : MonoBehaviour
             AlertUIPlacement.Custom => _config.CustomAlertUITransform,
             _ => AlertUIConstants.FloorTransform
         };
-        
-        _floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(200, 60), false,
+
+        _floatingScreen = FloatingScreen.CreateFloatingScreen(AlertUIConstants.FloatingScreenSize, false,
             uiTransform.Position, Quaternion.Euler(uiTransform.Rotation));
         _floatingScreen.transform.localScale = AlertUIConstants.FloatingScreenScale * uiTransform.Scale;
     }
