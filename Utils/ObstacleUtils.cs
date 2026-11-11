@@ -61,7 +61,7 @@ internal static class ObstacleUtils
         if (bpmChanges.Length == 0)
             throw new ArgumentException("Value cannot be an empty collection.", nameof(bpmChanges));
 
-        List<ObstacleData> obstacleDatas = new();
+        List<ObstacleData> obstacles = new();
 
         int bpmChangeIndex = 0;
         float bpm = bpmChanges[bpmChangeIndex].BPM;
@@ -83,30 +83,30 @@ internal static class ObstacleUtils
         {
             if (bpmChangeIndex < bpmChanges.Length - 1 && time + beatsDuration >= bpmChanges[bpmChangeIndex + 1].Time)
             {
-                obstacleDatas.Add(
+                bpmChangeIndex++;
+                obstacles.Add(
                     new ObstacleData(
                         time,
                         BeatTimeUtils.GetBeatsFromStart(time, bpmChanges),
-                        BeatTimeUtils.GetBeatsFromStart(bpmChanges[bpmChangeIndex + 1].Time, bpmChanges),
+                        BeatTimeUtils.GetBeatsFromStart(bpmChanges[bpmChangeIndex].Time, bpmChanges),
                         obstacle.rotation,
                         obstacle.lineIndex,
                         obstacle.lineLayer,
-                        bpmChanges[bpmChangeIndex + 1].Time - time,
+                        bpmChanges[bpmChangeIndex].Time - time,
                         obstacle.width,
                         obstacle.height
                     )
                 );
 
-                bpmChangeIndex++;
                 bpm = bpmChanges[bpmChangeIndex].BPM;
                 beatsDuration = BeatTimeUtils.BeatsToDuration(bpm, beats);
-                time = bpmChanges[bpmChangeIndex + 1].Time;
+                time = bpmChanges[bpmChangeIndex].Time;
                 continue;
             }
 
             if (time + beatsDuration >= endTime)
             {
-                obstacleDatas.Add(
+                obstacles.Add(
                     new ObstacleData(
                         time,
                         BeatTimeUtils.GetBeatsFromStart(time, bpmChanges),
@@ -122,7 +122,7 @@ internal static class ObstacleUtils
                 break;
             }
 
-            obstacleDatas.Add(
+            obstacles.Add(
                 new ObstacleData(
                     time,
                     BeatTimeUtils.GetBeatsFromStart(time, bpmChanges),
@@ -138,6 +138,6 @@ internal static class ObstacleUtils
             time += beatsDuration;
         }
 
-        return obstacleDatas;
+        return obstacles;
     }
 }
