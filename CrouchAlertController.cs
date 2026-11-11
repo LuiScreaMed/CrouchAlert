@@ -34,6 +34,7 @@ internal class CrouchAlertController : MonoBehaviour
     private BPMChangeItem[]? _bpmChanges = null;
     private CrouchItem[]? _crouches = null;
     private int _nextCrouchIndex = -1;
+    private float _groupingThresholdWithMargin = 0.5f;
 
     private FloatingScreen _floatingScreen = null!;
 
@@ -51,6 +52,7 @@ internal class CrouchAlertController : MonoBehaviour
         _alertView = alertView;
         _beatmapLevel = beatmapLevel;
         _audioTimeSyncController = audioTimeSyncController;
+        _groupingThresholdWithMargin = _config.CrouchWallGroupingThreshold + 0.016f; // Add 1/64 beats margin
 
         Init();
 
@@ -158,11 +160,22 @@ internal class CrouchAlertController : MonoBehaviour
         Plugin.Log.Debug("Calculating crouches");
         HashSet<CrouchItem> crouches = new();
         Walls currentWalls = new Walls();
+        // Do one more group threshold check when adding crouch alerts
+        // do this to avoid crouch alert spam, because grouping logic is in a mess and refactoring it burns my braincell
+        ObstacleData? lastCrouchObstacle = null;
         foreach (ObstacleData obstacle in obstacles)
         {
             currentWalls.ApplyNewObstacle(obstacle);
             if (NeedCrouch(currentWalls))
             {
+                ObstacleData? last = lastCrouchObstacle;
+                lastCrouchObstacle = obstacle;
+                if (last != null &&
+                    BeatTimeUtils.BeatsBetween(last.time, obstacle.time, bpmChanges!) <
+                    _groupingThresholdWithMargin)
+                {
+                    continue;
+                }
                 float alertTime = _config.UseBeatsAsAlertDurationUnit
                     ? BeatTimeUtils.TimeBeforeBeats(obstacle.time, _config.AlertDurationInBeats,
                         bpmChanges)
@@ -283,9 +296,13 @@ internal class CrouchAlertController : MonoBehaviour
         return processedObstacles;
     }
 
+    /// <summary>
+    /// Group crouch obstacles
+    /// </summary>
+    /// <param name="obstacles"></param>
+    /// <returns></returns>
     private List<ObstacleData> GroupObstacles(List<ObstacleData> obstacles)
     {
-        // Grouping crouch obstacles:
         // 1. Group up nearby obstacles if their spawn lines are overlapping or next to each other (not including identical lines obstacles)[1]
         // and with spawn time gap under the value of CrouchWallGroupingThreshold
         // [1]: To avoid grouping a very long crouch obstacle into a massive obstacle 
@@ -293,7 +310,6 @@ internal class CrouchAlertController : MonoBehaviour
         List<ObstacleData> groupedObstacles = new();
         ObstacleData? groupedCrouchObstacle = null;
         float lastCrouchObstacleTime = 0f;
-        float groupingThreshold = _config.CrouchWallGroupingThreshold + 0.016f; // Add 1/64 beats margin
         foreach (ObstacleData obstacle in obstacles)
         {
             if (obstacle.lineLayer != NoteLineLayer.Top)
@@ -304,7 +320,8 @@ internal class CrouchAlertController : MonoBehaviour
 
             if (
                 groupedCrouchObstacle == null ||
-                BeatTimeUtils.BeatsBetween(lastCrouchObstacleTime, obstacle.time, _bpmChanges!) > groupingThreshold ||
+                BeatTimeUtils.BeatsBetween(lastCrouchObstacleTime, obstacle.time, _bpmChanges!) >
+                _groupingThresholdWithMargin ||
                 !ObstacleUtils.AreSpawnLinesOverlappingOrNextTo(groupedCrouchObstacle, obstacle)
             )
             {
@@ -368,7 +385,8 @@ internal class CrouchAlertController : MonoBehaviour
 
             if (
                 groupedCrouchObstacle == null ||
-                BeatTimeUtils.BeatsBetween(lastCrouchObstacleTime, obstacle.time, _bpmChanges!) > groupingThreshold ||
+                BeatTimeUtils.BeatsBetween(lastCrouchObstacleTime, obstacle.time, _bpmChanges!) >
+                _groupingThresholdWithMargin ||
                 !ObstacleUtils.AreSpawnLinesIdentical(groupedCrouchObstacle, obstacle)
             )
             {
