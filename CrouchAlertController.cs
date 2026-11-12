@@ -373,6 +373,8 @@ internal class CrouchAlertController : MonoBehaviour
         groupedObstacles.Sort((obstacle1, obstacle2) => obstacle1.time.CompareTo(obstacle2.time));
 
         // 2. Group up repeat obstacles (merge the split obstacles in pre-process)
+        groupedCrouchObstacle = null;
+        lastCrouchObstacleTime = 0f;
         obstacles = groupedObstacles;
         groupedObstacles = new();
         foreach (ObstacleData obstacle in obstacles)
