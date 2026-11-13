@@ -46,7 +46,10 @@ internal class AudioClipLoader
                 Plugin.Log.Info("Default audio clip file not found. Creating default audio clip.");
                 Stream defaultAudioClipStream = Assembly.GetExecutingAssembly()
                     .GetManifestResourceStream("CrouchAlert.Resources.default.wav");
-                await defaultAudioClipStream.CopyToAsync(File.Create(DEFAULT_AUDIO_CLIP_PATH));
+                FileStream destination = File.Create(DEFAULT_AUDIO_CLIP_PATH);
+                await defaultAudioClipStream.CopyToAsync(destination);
+                destination.Close();
+                defaultAudioClipStream.Close();
             }
         }
         catch (Exception e)
