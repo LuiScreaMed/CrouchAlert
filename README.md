@@ -4,7 +4,7 @@ English | [简体中文](./README_zh.md)
 
 **INCOMING CROUCH!!!**
 
-A Beat Saber mod to alert incoming crouch walls. Supports Beat Saber 1.40.8 on PC. May not work correctly in NoodleExtensions maps.
+A Beat Saber mod to alert incoming crouch walls. Supports Beat Saber 1.40.8/1.44.1 on PC. May not work correctly in NoodleExtensions maps.
 
 ## Installation
 
