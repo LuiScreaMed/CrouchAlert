@@ -499,7 +499,7 @@ internal class CrouchAlertController : MonoBehaviour
         }
 
         if (_nextCrouchIndex > oldNextCrouchIndex &&
-            _audioTimeSyncController.state == AudioTimeSyncController.State.Playing)
+            _audioTimeSyncController.state == IAudioTimeSource.State.Playing)
         {
             if (_alertCoroutine != null) StopCoroutine(_alertCoroutine);
             _alertCoroutine =
